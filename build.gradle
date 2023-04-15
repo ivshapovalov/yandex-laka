@@ -1,23 +1,116 @@
+//import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+//import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.0.4'
+    id 'org.springframework.boot' version '3.0.5'
     id 'io.spring.dependency-management' version '1.1.0'
+    id 'com.adarshr.test-logger' version '3.2.0'
 }
 
 group = 'ru.yandex'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
+targetCompatibility = '17'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    runtimeOnly 'org.postgresql:postgresql'
+    implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
+    implementation group: 'io.github.resilience4j', name: 'resilience4j-spring-boot3', version: '2.0.2'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.14.2'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.9.2'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.9.2'
+    testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+testlogger {
+    theme 'mocha'
+    slowThreshold 5000
 }
+
+tasks.withType(Test) {
+    testlogger {
+        theme 'standard-parallel' // task level
+    }
+    useJUnitPlatform {
+        excludeTags("acceptance")
+    }
+//    include 'ru/yandex/yandexlavka/**/MainServiceTest**'
+    exclude 'ru/yandex/yandexlavka/temp/Failed**'
+//    exclude '**/**Acceptance**'
+
+//    afterTest { desc, result ->
+//        if ("${result.resultType}" == 'FAILURE'){
+//            throw new GradleException("Tests failed! Stop build jar!")
+//        }
+//    }
+
+//    testLogging {
+//        events TestLogEvent.FAILED,
+//                TestLogEvent.PASSED,
+//                TestLogEvent.SKIPPED,
+//                TestLogEvent.STANDARD_OUT
+//        exceptionFormat TestExceptionFormat.FULL
+//        showExceptions true
+//        showCauses true
+//        showStackTraces true
+//
+//        debug {
+//            events TestLogEvent.STARTED,
+//                    TestLogEvent.FAILED,
+//                    TestLogEvent.PASSED,
+//                    TestLogEvent.SKIPPED,
+//                    TestLogEvent.STANDARD_ERROR,
+//                    TestLogEvent.STANDARD_OUT
+//            exceptionFormat TestExceptionFormat.FULL
+//        }
+//        info.events = debug.events
+//        info.exceptionFormat = debug.exceptionFormat
+//
+//        afterSuite { desc, result ->
+//            if (!desc.parent) {
+//                def output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+//                def startItem = '|  ', endItem = '  |'
+//                def repeatLength = startItem.length() + output.length() + endItem.length()
+//                println('\n' + ('-' * repeatLength) + '\n' + startItem + output + endItem + '\n' + ('-' * repeatLength))
+//            }
+//        }
+//    }
+
+//    beforeTest {
+//        descriptor -> logger.lifecycle("Running test: " + descriptor)
+//    }
+//
+//    onOutput {
+//        descriptor, event -> logger.lifecycle
+//        ("Test: " + descriptor + " produced standard out/err: "
+//                + event.message )
+//    }
+
+}
+
+tasks.withType(org.gradle.jvm.tasks.Jar) {
+    dependsOn 'test'
+}
+
+

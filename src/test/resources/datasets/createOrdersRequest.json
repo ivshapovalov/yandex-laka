@@ -1,0 +1,28 @@
+{
+  "orders": [
+    {
+      "weight": 5.5,
+      "region": 1,
+      "delivery_hours":["09:00-12:00","15:00-22:00"],
+      "cost": 10
+    },
+    {
+      "weight": 9.8,
+      "region": 2,
+      "delivery_hours":["09:00-12:00"],
+      "cost": 11
+    },
+      {
+      "weight": 15,
+      "region": 3,
+      "delivery_hours":["18:00-22:00"],
+      "cost": 50
+    },
+          {
+      "weight": 10.0,
+      "region": 4,
+      "delivery_hours":["08:00-22:00"],
+      "cost": 15
+    }
+  ]
+}

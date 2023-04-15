@@ -1,0 +1,135 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+management.health.ratelimiters.enabled: true
+
+resilience4j:
+  ratelimiter:
+    configs:
+      default:
+        registerHealthIndicator: true
+        allowHealthIndicatorToFail: true
+        subscribeForEvents: true
+        eventConsumerBufferSize: 100
+        limitForPeriod: 10
+        limitRefreshPeriod: 1s
+        timeoutDuration: 100ms
+      instances:
+        registerHealthIndicator: true
+#    instances:
+#      myRateLimiter:
+#        baseConfig: default
+#    metrics:
+#      enabled: true
+#    instances:
+#      myRatelimiter:
+#        registerHealthIndicator: true
+#        allowHealthIndicatorToFail: true
+#        subscribeForEvents: true
+#        eventConsumerBufferSize: 100
+#        limitForPeriod: 10
+#        limitRefreshPeriod: 1s
+#        timeoutDuration: 100ms
+spring:
+  jackson:
+    serialization:
+      write_dates_as_timestamps: false
+  output:
+    ansi:
+      enabled: ALWAYS
+  config:
+    name: test
+  profiles:
+    group:
+      default:
+        - "dev"
+      production:
+        - "production"
+      test-h2:
+        - "test-h2"
+      test-postgres:
+        - "test-postgres"
+    active: default
+  sql:
+    init:
+      mode: always
+  jpa:
+    show-sql: true
+    generate-ddl: true
+#    hibernate:
+#      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    driver-class-name: org.postgresql.Driver
+ratelimiter:
+  instances:
+    basic:
+      limitForPeriod: 2
+      limitRefreshPeriod: 1s
+      timeoutDuration: 1s
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/lavka
+    username: postgres
+    password: postgres
+---
+spring:
+  config:
+    activate:
+      on-profile: production
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_SERVER}:${POSTGRES_PORT}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+---
+spring:
+  config:
+    activate:
+      on-profile: test-postgres
+  sql:
+    init:
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  datasource:
+    initialization-mode: always
+    url: jdbc:postgresql://localhost:5432/lavka-test
+    username: postgres
+    password: postgres
+---
+spring:
+  config:
+    activate:
+      on-profile: test-h2
+    name: test
+  sql:
+    init:
+      mode: embedded
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL;NON_KEYWORDS=USER
+    username: sa
+    password: sa
