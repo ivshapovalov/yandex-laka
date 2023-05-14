@@ -6,14 +6,12 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
@@ -22,29 +20,28 @@ import java.util.Set;
 
 import static java.lang.String.format;
 
-@ControllerAdvice
+@RestControllerAdvice
 @Log
 class ExceptionHandlerAdvice {
 
     @ExceptionHandler(RequestNotPermitted.class)
-    public ResponseEntity<Object> handleRequestNotPermitted(RequestNotPermitted ex, HttpServletRequest request) {
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public String handleRequestNotPermitted(RequestNotPermitted ex, HttpServletRequest request) {
         log.warning(format("Request to path '%s' is blocked due to rate-limiting. %s",
                 request.getRequestURI(), ex.getMessage()));
-        return new ResponseEntity<>("Too many requests", HttpStatus.TOO_MANY_REQUESTS);
+        return "Too many requests";
     }
 
-    @ResponseBody
     @ExceptionHandler(
             {CourierNotFoundException.class,
                     CourierOrderNotFoundException.class,
                     OrderNotFoundException.class,
                     OrderAlreadyCompletedException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    String businessExceptionHandler(BusinessException ex) {
+    String handleRepositoryExceptionHandler(BusinessException ex) {
         return ex.getMessage();
     }
 
-    @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleMethodArgumentNotValidException(
@@ -58,7 +55,6 @@ class ExceptionHandlerAdvice {
         return errors;
     }
 
-    @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public String handleHttpMessageNotReadableException(
@@ -66,7 +62,6 @@ class ExceptionHandlerAdvice {
         return ex.getMessage();
     }
 
-    @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
     public Map<String, String> handleConstraintViolationException(ConstraintViolationException e) {
@@ -81,7 +76,6 @@ class ExceptionHandlerAdvice {
         return errors;
     }
 
-    @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public Map<String, String> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
@@ -89,4 +83,12 @@ class ExceptionHandlerAdvice {
         errors.put(e.getName(), e.getMessage());
         return errors;
     }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleAllUncaughtException(Exception e) {
+        log.warning("Unknown error occurred: " + e);
+        return "Internal server error!";
+    }
+
 }

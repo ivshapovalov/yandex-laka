@@ -36,6 +36,7 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +75,9 @@ public class MainServiceTest extends CommonTest {
     @MockBean
     private GroupOrdersRepository groupOrdersRepository;
 
+    @MockBean
+    private VrpService vrpService;
+
     @Test
     public void createCouriersWhenOneCourierAndAllRegionsAreNewExecutedCorrectly() {
         List<Integer> regionIds = Arrays.asList(1, 2, 3);
@@ -108,7 +112,7 @@ public class MainServiceTest extends CommonTest {
         verify(courierRepository).saveAll(captor.capture());
         assertIterableEquals(expected, captor.getValue());
         assertIterableEquals(expected, actual);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -143,7 +147,7 @@ public class MainServiceTest extends CommonTest {
         verify(courierRepository).saveAll(captor.capture());
         assertIterableEquals(expected, captor.getValue());
         assertIterableEquals(expected, actual);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -181,7 +185,7 @@ public class MainServiceTest extends CommonTest {
         verify(courierRepository).saveAll(captor.capture());
         assertIterableEquals(expected, captor.getValue());
         assertIterableEquals(expected, actual);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -224,7 +228,7 @@ public class MainServiceTest extends CommonTest {
         verify(courierRepository).saveAll(captor.capture());
         assertIterableEquals(expected, captor.getValue());
         assertIterableEquals(expected, actual);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -237,7 +241,7 @@ public class MainServiceTest extends CommonTest {
 
         verify(courierRepository).findAll(offset, limit);
         assertIterableEquals(new ArrayList<>(), actual);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -262,7 +266,7 @@ public class MainServiceTest extends CommonTest {
 
         assertEquals(expected, actual);
         verify(courierRepository).findAll(offset, limit);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -275,7 +279,7 @@ public class MainServiceTest extends CommonTest {
         });
 
         verify(courierRepository).findById(id);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -293,7 +297,7 @@ public class MainServiceTest extends CommonTest {
 
         assertEquals(expected, actual);
         verify(courierRepository).findById(id);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -324,7 +328,7 @@ public class MainServiceTest extends CommonTest {
         verify(orderRepository).saveAll(captor.capture());
         assertIterableEquals(expected, captor.getValue());
         assertIterableEquals(expected, actual);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -353,7 +357,7 @@ public class MainServiceTest extends CommonTest {
         verify(orderRepository).saveAll(captor.capture());
         assertIterableEquals(expected, captor.getValue());
         assertIterableEquals(expected, actual);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -397,7 +401,7 @@ public class MainServiceTest extends CommonTest {
         assertEquals(newRegionId, captorRegion.getValue().getId());
         assertIterableEquals(expected, captorOrder.getValue());
         assertIterableEquals(expected, actual);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -410,7 +414,7 @@ public class MainServiceTest extends CommonTest {
 
         verify(orderRepository).findAll(offset, limit);
         assertIterableEquals(new ArrayList<>(), actual);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -437,7 +441,7 @@ public class MainServiceTest extends CommonTest {
 
         assertEquals(expected, actual);
         verify(orderRepository).findAll(offset, limit);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -450,7 +454,7 @@ public class MainServiceTest extends CommonTest {
         });
 
         verify(orderRepository).findById(id);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -468,7 +472,7 @@ public class MainServiceTest extends CommonTest {
 
         assertEquals(expected, actual);
         verify(orderRepository).findById(id);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -489,7 +493,7 @@ public class MainServiceTest extends CommonTest {
         });
 
         verify(orderRepository).findById(orderId);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -514,7 +518,7 @@ public class MainServiceTest extends CommonTest {
         });
 
         verify(orderRepository).findById(orderId);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -540,7 +544,7 @@ public class MainServiceTest extends CommonTest {
 
         verify(orderRepository).findById(orderId);
         verify(courierRepository).findById(courierId);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -569,7 +573,7 @@ public class MainServiceTest extends CommonTest {
 
         verify(orderRepository).findById(orderId);
         verify(courierRepository).findById(courierId);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -612,9 +616,8 @@ public class MainServiceTest extends CommonTest {
 
         verify(orderRepository).findById(orderId);
         verify(courierRepository).findById(courierId);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
-
 
     @Test
     public void completeOrderWhenOneOrderExecutedCorrectly() {
@@ -659,7 +662,7 @@ public class MainServiceTest extends CommonTest {
         assertEquals(1, captor.getValue().size());
         assertIterableEquals(List.of(orderDtoExpected), captor.getValue());
         assertIterableEquals(List.of(orderDtoExpected), actual);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -734,7 +737,7 @@ public class MainServiceTest extends CommonTest {
         assertEquals(2, captor.getValue().size());
         assertIterableEquals(List.of(orderDto1Expected, orderDto2Expected), captor.getValue());
         assertIterableEquals(List.of(orderDto1Expected, orderDto2Expected), actual);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -789,7 +792,7 @@ public class MainServiceTest extends CommonTest {
         verify(courierRepository).findById(courierId1);
         verify(courierRepository).findById(courierId2);
 
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -841,7 +844,7 @@ public class MainServiceTest extends CommonTest {
         verify(courierRepository).findById(courierId);
         verify(orderRepository).findAllByGroupOrdersInAndCompletedTimeGreaterThanEqualAndCompletedTimeLessThan(
                 groupOrdersList, startOffsetDateTime, endOffsetDateTime);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -902,7 +905,7 @@ public class MainServiceTest extends CommonTest {
         verify(courierRepository).findById(courierId);
         verify(orderRepository).findAllByGroupOrdersInAndCompletedTimeGreaterThanEqualAndCompletedTimeLessThan(
                 groupOrdersList, startOffsetDateTime, endOffsetDateTime);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -919,7 +922,7 @@ public class MainServiceTest extends CommonTest {
         });
 
         verify(courierRepository).findById(courierId);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -953,44 +956,34 @@ public class MainServiceTest extends CommonTest {
 
         List<GroupOrders> groupOrdersList = Arrays.asList(groupOrders1, groupOrders2);
 
-        List<CouriersGroupOrders> courierGroupOrders = groupOrdersList.stream().map(groupOrders -> {
-            CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders();
-            couriersGroupOrders.setCourierId(courierId);
-            couriersGroupOrders.setGroupOrders(groupOrders);
-            return couriersGroupOrders;
-        }).collect(Collectors.toList());
+        List<CouriersGroupOrders> courierGroupOrders =
+                List.of(new CouriersGroupOrders(courierId, groupOrdersList));
 
-        OrderAssignResponse orderAssignResponse = new OrderAssignResponse();
-        orderAssignResponse.setDate(currentDate);
-        orderAssignResponse.setCouriersGroupOrders(courierGroupOrders);
-        List<OrderAssignResponse> expected = List.of(orderAssignResponse);
+        OrderAssignResponse expected = new OrderAssignResponse(currentDate, courierGroupOrders);
 
         when(groupOrdersRepository.findAllByCourierIdEqualsAndDateEquals(courierId, currentDate)).thenReturn(groupOrdersList);
 
-        List<OrderAssignResponse> actual = mainService.getCouriersAssignments(courierId, currentDate);
+        OrderAssignResponse actual = mainService.getCouriersAssignments(courierId, currentDate);
 
-        assertIterableEquals(actual, expected);
+        assertEquals(expected, actual);
         verify(groupOrdersRepository).findAllByCourierIdEqualsAndDateEquals(courierId, currentDate);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
     public void getCouriersAssignmentsWhenCourierIdSetAndDateSetAndOrdersEmptyExecutedCorrectly() {
         long courierId = 15;
         LocalDate currentDate = LocalDate.parse("2023-04-14");
-
-        OrderAssignResponse orderAssignResponse = new OrderAssignResponse();
-        orderAssignResponse.setDate(currentDate);
-        orderAssignResponse.setCouriersGroupOrders(new ArrayList<>());
-        List<OrderAssignResponse> expected = List.of(orderAssignResponse);
+        CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders(courierId, new ArrayList<>());
+        OrderAssignResponse expected = new OrderAssignResponse(currentDate, List.of(couriersGroupOrders));
 
         when(groupOrdersRepository.findAllByCourierIdEqualsAndDateEquals(courierId, currentDate)).thenReturn(new ArrayList<>());
 
-        List<OrderAssignResponse> actual = mainService.getCouriersAssignments(courierId, currentDate);
+        OrderAssignResponse actual = mainService.getCouriersAssignments(courierId, currentDate);
 
-        assertIterableEquals(actual, expected);
+        assertEquals(expected, actual);
         verify(groupOrdersRepository).findAllByCourierIdEqualsAndDateEquals(courierId, currentDate);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -1022,25 +1015,17 @@ public class MainServiceTest extends CommonTest {
 
         List<GroupOrders> groupOrdersList = Arrays.asList(groupOrders1, groupOrders2);
 
-        List<CouriersGroupOrders> courierGroupOrders = groupOrdersList.stream().map(groupOrders -> {
-            CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders();
-            couriersGroupOrders.setCourierId(courierId);
-            couriersGroupOrders.setGroupOrders(groupOrders);
-            return couriersGroupOrders;
-        }).collect(Collectors.toList());
+        List<CouriersGroupOrders> courierGroupOrders = List.of(new CouriersGroupOrders(courierId, groupOrdersList));
 
-        OrderAssignResponse orderAssignResponse = new OrderAssignResponse();
-        orderAssignResponse.setDate(currentDate);
-        orderAssignResponse.setCouriersGroupOrders(courierGroupOrders);
-        List<OrderAssignResponse> expected = List.of(orderAssignResponse);
+        OrderAssignResponse expected = new OrderAssignResponse(currentDate, courierGroupOrders);
 
         when(groupOrdersRepository.findAllByCourierIdEqualsAndDateEquals(courierId, currentDate)).thenReturn(groupOrdersList);
 
-        List<OrderAssignResponse> actual = mainService.getCouriersAssignments(courierId, null);
+        OrderAssignResponse actual = mainService.getCouriersAssignments(courierId, null);
 
-        assertIterableEquals(actual, expected);
+        assertEquals(expected, actual);
         verify(groupOrdersRepository).findAllByCourierIdEqualsAndDateEquals(courierId, currentDate);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -1078,12 +1063,7 @@ public class MainServiceTest extends CommonTest {
 
         List<GroupOrders> groupOrdersList1 = Arrays.asList(groupOrders1_1, groupOrders1_2);
 
-        List<CouriersGroupOrders> courierGroupOrders1 = groupOrdersList1.stream().map(groupOrders -> {
-            CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders();
-            couriersGroupOrders.setCourierId(courierId1);
-            couriersGroupOrders.setGroupOrders(groupOrders);
-            return couriersGroupOrders;
-        }).collect(Collectors.toList());
+        CouriersGroupOrders courierGroupOrders1 = new CouriersGroupOrders(courierId1, groupOrdersList1);
 
         CourierDto courierDto2 = new CourierDto();
         courierDto2.setCourierType(CourierDto.CourierTypeEnum.AUTO);
@@ -1114,35 +1094,23 @@ public class MainServiceTest extends CommonTest {
 
         List<GroupOrders> groupOrdersList2 = Arrays.asList(groupOrders2_1, groupOrders2_2);
 
-        List<CouriersGroupOrders> courierGroupOrders2 = groupOrdersList2.stream().map(groupOrders -> {
-            CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders();
-            couriersGroupOrders.setCourierId(courierId2);
-            couriersGroupOrders.setGroupOrders(groupOrders);
-            return couriersGroupOrders;
-        }).collect(Collectors.toList());
+        CouriersGroupOrders courierGroupOrders2 = new CouriersGroupOrders(courierId2, groupOrdersList2);
 
-        OrderAssignResponse orderAssignResponse1 = new OrderAssignResponse();
-        orderAssignResponse1.setDate(currentDate);
-        orderAssignResponse1.setCouriersGroupOrders(courierGroupOrders1);
-
-        OrderAssignResponse orderAssignResponse2 = new OrderAssignResponse();
-        orderAssignResponse2.setDate(currentDate);
-        orderAssignResponse2.setCouriersGroupOrders(courierGroupOrders2);
-
-        List<OrderAssignResponse> expected = List.of(orderAssignResponse1, orderAssignResponse2);
+        OrderAssignResponse expected =
+                new OrderAssignResponse(currentDate, List.of(courierGroupOrders1, courierGroupOrders2));
 
         List<GroupOrders> groupOrdersListAll = new ArrayList<>();
         groupOrdersListAll.addAll(groupOrdersList1);
         groupOrdersListAll.addAll(groupOrdersList2);
+        Collections.sort(groupOrdersListAll, (o1, o2) -> (int) (o1.getId() - o2.getId()));
 
         when(groupOrdersRepository.findAllByDateEquals(currentDate)).thenReturn(groupOrdersListAll);
 
-        List<OrderAssignResponse> actual = mainService.getCouriersAssignments(null, null);
+        OrderAssignResponse actual = mainService.getCouriersAssignments(null, null);
 
-        assertEquals(actual.size(), expected.size());
-        assertIterableEquals(actual, expected);
+        assertEquals(expected, actual);
         verify(groupOrdersRepository).findAllByDateEquals(currentDate);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
     @Test
@@ -1180,12 +1148,7 @@ public class MainServiceTest extends CommonTest {
 
         List<GroupOrders> groupOrdersList1 = Arrays.asList(groupOrders1_1, groupOrders1_2);
 
-        List<CouriersGroupOrders> courierGroupOrders1 = groupOrdersList1.stream().map(groupOrders -> {
-            CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders();
-            couriersGroupOrders.setCourierId(courierId1);
-            couriersGroupOrders.setGroupOrders(groupOrders);
-            return couriersGroupOrders;
-        }).collect(Collectors.toList());
+        CouriersGroupOrders courierGroupOrders1 = new CouriersGroupOrders(courierId1, groupOrdersList1);
 
         CourierDto courierDto2 = new CourierDto();
         courierDto2.setCourierType(CourierDto.CourierTypeEnum.AUTO);
@@ -1216,38 +1179,149 @@ public class MainServiceTest extends CommonTest {
 
         List<GroupOrders> groupOrdersList2 = Arrays.asList(groupOrders2_1, groupOrders2_2);
 
-        List<CouriersGroupOrders> courierGroupOrders2 = groupOrdersList2.stream().map(groupOrders -> {
-            CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders();
-            couriersGroupOrders.setCourierId(courierId2);
-            couriersGroupOrders.setGroupOrders(groupOrders);
-            return couriersGroupOrders;
-        }).collect(Collectors.toList());
+        CouriersGroupOrders courierGroupOrders2 = new CouriersGroupOrders(courierId2, groupOrdersList2);
 
-        OrderAssignResponse orderAssignResponse1 = new OrderAssignResponse();
-        orderAssignResponse1.setDate(currentDate);
-        orderAssignResponse1.setCouriersGroupOrders(courierGroupOrders1);
+        OrderAssignResponse orderAssignResponse = new OrderAssignResponse(currentDate,
+                List.of(courierGroupOrders1, courierGroupOrders2));
 
-        OrderAssignResponse orderAssignResponse2 = new OrderAssignResponse();
-        orderAssignResponse2.setDate(currentDate);
-        orderAssignResponse2.setCouriersGroupOrders(courierGroupOrders2);
-
-        List<OrderAssignResponse> expected = List.of(orderAssignResponse1, orderAssignResponse2);
+        OrderAssignResponse expected = orderAssignResponse;
 
         List<GroupOrders> groupOrdersListAll = new ArrayList<>();
         groupOrdersListAll.addAll(groupOrdersList1);
         groupOrdersListAll.addAll(groupOrdersList2);
+        Collections.sort(groupOrdersListAll, (o1, o2) -> (int) (o1.getId() - o2.getId()));
 
         when(groupOrdersRepository.findAllByDateEquals(currentDate)).thenReturn(groupOrdersListAll);
 
-        List<OrderAssignResponse> actual = mainService.getCouriersAssignments(null, currentDate);
+        OrderAssignResponse actual = mainService.getCouriersAssignments(null, currentDate);
 
-        assertEquals(actual.size(), expected.size());
-        assertIterableEquals(actual, expected);
+        assertEquals(expected, actual);
         verify(groupOrdersRepository).findAllByDateEquals(currentDate);
-        verifyAllRepositoriesNoMoreInteractions();
+        verifyAllMocksNoMoreInteractions();
     }
 
-    private void verifyAllRepositoriesNoMoreInteractions() {
-        verifyNoMoreInteractions(courierRepository, regionRepository, orderRepository, groupOrdersRepository);
+    @Test
+    public void assignOrdersWhenDateIsNullAndNoOrdersExistsExecutedCorrectly() {
+        List<OrderDto> orders = new ArrayList<>();
+        List<CourierDto> couriers = new ArrayList<>();
+        OrderAssignResponse expected = new OrderAssignResponse(LocalDate.now(), new ArrayList<>());
+
+        when(orderRepository.findAllByCompletedTimeIsNull()).thenReturn(orders);
+        when(courierRepository.findAll(0, Integer.MAX_VALUE)).thenReturn(couriers);
+        when(groupOrdersRepository.saveAllAndFlush(any(List.class))).thenReturn(new ArrayList());
+
+        OrderAssignResponse actual = mainService.orderAssign(null);
+
+        assertEquals(expected, actual);
+        verify(orderRepository).findAllByCompletedTimeIsNull();
+        verify(courierRepository).findAll(0, Integer.MAX_VALUE);
+        verifyAllMocksNoMoreInteractions();
+    }
+
+    @Test
+    public void assignOrdersWhenDateIsSetAndNoOrdersExistsExecutedCorrectly() {
+        LocalDate currentDate = LocalDate.parse("2023-04-25");
+        List<OrderDto> orders = new ArrayList<>();
+        List<CourierDto> couriers = new ArrayList<>();
+        OrderAssignResponse expected = new OrderAssignResponse(currentDate, new ArrayList<>());
+
+        when(orderRepository.findAllByCompletedTimeIsNull()).thenReturn(orders);
+        when(courierRepository.findAll(0, Integer.MAX_VALUE)).thenReturn(couriers);
+
+        OrderAssignResponse actual = mainService.orderAssign(currentDate);
+
+        assertEquals(expected, actual);
+        verify(orderRepository).findAllByCompletedTimeIsNull();
+        verify(courierRepository).findAll(0, Integer.MAX_VALUE);
+        verifyAllMocksNoMoreInteractions();
+    }
+
+    @Test
+    public void assignOrdersWhenDateIsSetAndOrdersExistsExecutedCorrectly() {
+        LocalDate currentDate = LocalDate.parse("2023-04-25");
+        List<OrderDto> orders = new ArrayList<>();
+
+        long courierId1 = 5;
+        Region region1 = new Region(1);
+
+        CourierDto courierDto1 = new CourierDto();
+        courierDto1.setId(courierId1);
+        courierDto1.setCourierType(CourierDto.CourierTypeEnum.FOOT);
+        courierDto1.setRegions(Arrays.asList(new Region(1), new Region(2)));
+        courierDto1.setWorkingHours(List.of("09:00-18:00", "19:00-21:00"));
+        courierDto1.setRating(10);
+        courierDto1.setEarnings(1150);
+
+        GroupOrders groupOrders1 = new GroupOrders(currentDate, courierDto1);
+
+        List<OrderDto> orders1 = IntStream.rangeClosed(1, 24).mapToObj(ind -> {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setCost(ind);
+            orderDto.setRegion(region1);
+            orderDto.setCompletedTime(OffsetDateTime.parse("2023-03-20T01:00:00.000+00"));
+            orderDto.setGroupOrders(groupOrders1);
+            return orderDto;
+        }).collect(Collectors.toList());
+
+        groupOrders1.setOrders(orders1);
+
+        CouriersGroupOrders couriersGroupOrders1 = new CouriersGroupOrders(courierId1, List.of(groupOrders1));
+
+        long courierId2 = 7;
+
+        Region region2 = new Region(11);
+
+        CourierDto courierDto2 = new CourierDto();
+        courierDto2.setId(courierId2);
+        courierDto2.setCourierType(CourierDto.CourierTypeEnum.FOOT);
+        courierDto2.setRegions(Arrays.asList(region1, region2));
+        courierDto2.setWorkingHours(List.of("09:00-18:00", "19:00-21:00"));
+        courierDto2.setRating(9);
+        courierDto2.setEarnings(100);
+
+        GroupOrders groupOrders2 = new GroupOrders(currentDate, courierDto2);
+
+        List<OrderDto> orders2 = IntStream.rangeClosed(1, 24).mapToObj(ind -> {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setCost(ind);
+            orderDto.setRegion(region2);
+            orderDto.setCompletedTime(OffsetDateTime.parse("2023-03-20T01:00:00.000+00"));
+            orderDto.setGroupOrders(groupOrders2);
+            return orderDto;
+        }).collect(Collectors.toList());
+
+        orders.addAll(orders1);
+        orders.addAll(orders2);
+
+        groupOrders2.setOrders(orders2);
+
+        CouriersGroupOrders couriersGroupOrders2 = new CouriersGroupOrders(courierId2, List.of(groupOrders2));
+
+        OrderAssignResponse orderAssignResponse = new OrderAssignResponse(
+                currentDate, List.of(couriersGroupOrders1, couriersGroupOrders2));
+
+        OrderAssignResponse expected = orderAssignResponse;
+
+        when(orderRepository.findAllByCompletedTimeIsNull()).thenReturn(orders);
+        when(courierRepository.findAll(0, Integer.MAX_VALUE)).thenReturn(List.of(courierDto1, courierDto2));
+        when(vrpService.solve(currentDate, List.of(courierDto1, courierDto2), orders)).thenReturn(expected);
+        when(groupOrdersRepository.saveAllAndFlush(any(List.class))).thenReturn(List.of(groupOrders1, groupOrders2));
+
+        OrderAssignResponse actual = mainService.orderAssign(currentDate);
+
+        assertEquals(expected, actual);
+        verify(orderRepository).findAllByCompletedTimeIsNull();
+        verify(courierRepository).findAll(0, Integer.MAX_VALUE);
+        verify(vrpService).solve(currentDate, List.of(courierDto1, courierDto2), orders);
+        verify(groupOrdersRepository).saveAllAndFlush(any(List.class));
+        verifyAllMocksNoMoreInteractions();
+    }
+
+    private void verifyAllMocksNoMoreInteractions() {
+        verifyNoMoreInteractions(vrpService,
+                courierRepository,
+                regionRepository,
+                orderRepository,
+                groupOrdersRepository);
     }
 }

@@ -16,19 +16,24 @@ import ru.yandex.yandexlavka.exceptions.OrderAlreadyCompletedException;
 import ru.yandex.yandexlavka.exceptions.OrderNotFoundException;
 import ru.yandex.yandexlavka.model.dto.CompleteOrderDto;
 import ru.yandex.yandexlavka.model.dto.CompleteOrderRequest;
+import ru.yandex.yandexlavka.model.dto.CouriersGroupOrders;
 import ru.yandex.yandexlavka.model.dto.CreateOrderDto;
 import ru.yandex.yandexlavka.model.dto.CreateOrderRequest;
+import ru.yandex.yandexlavka.model.dto.OrderAssignResponse;
 import ru.yandex.yandexlavka.model.entity.CourierDto;
 import ru.yandex.yandexlavka.model.entity.GroupOrders;
 import ru.yandex.yandexlavka.model.entity.OrderDto;
 import ru.yandex.yandexlavka.model.entity.Region;
 import ru.yandex.yandexlavka.service.MainService;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.containsString;
@@ -96,6 +101,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(content().json(jsonResponse));
+
         ArgumentCaptor<CreateOrderRequest> captor = ArgumentCaptor.forClass(CreateOrderRequest.class);
         verify(mainService).createOrders(captor.capture());
         assertEquals(createOrderRequest, captor.getValue());
@@ -137,6 +143,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(content().json(jsonResponse));
+
         ArgumentCaptor<CreateOrderRequest> captor = ArgumentCaptor.forClass(CreateOrderRequest.class);
         verify(mainService).createOrders(captor.capture());
         assertEquals(createOrderRequest, captor.getValue());
@@ -190,6 +197,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(content().json(jsonResponse));
+
         ArgumentCaptor<CreateOrderRequest> captor = ArgumentCaptor.forClass(CreateOrderRequest.class);
         verify(mainService).createOrders(captor.capture());
         assertEquals(createOrderRequest, captor.getValue());
@@ -222,6 +230,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonResponse));
+
         verifyNoInteractions(mainService);
     }
 
@@ -247,6 +256,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(response));
+
         verifyNoInteractions(mainService);
     }
 
@@ -273,6 +283,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(response));
+
         verifyNoInteractions(mainService);
     }
 
@@ -302,6 +313,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonResponse));
+
         verifyNoInteractions(mainService);
     }
 
@@ -339,12 +351,19 @@ public class OrderControllerTest extends CommonTest {
                             "region": 1,
                             "delivery_hours":["09:00--23:00"],
                             "cost":10
-                       }                               
+                       },
+                       {
+                            "weight":5.5,
+                            "region": 1,
+                            "delivery_hours":["09:00-05:00"],
+                            "cost":10
+                       }                                                          
                   ]
                 }
                 """;
         String jsonResponse = """
                     {
+                        "orders[5].deliveryHours[]": "Invalid time window interval",
                         "orders[4].deliveryHours[]": "must match \\"(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]-(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]\\"",
                         "orders[1].deliveryHours[]": "must match \\"(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]-(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]\\"",
                         "orders[2].deliveryHours[]": "must match \\"(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]-(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]\\"",
@@ -359,6 +378,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonResponse));
+
         verifyNoInteractions(mainService);
     }
 
@@ -396,6 +416,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonResponse));
+
         verifyNoInteractions(mainService);
     }
 
@@ -414,6 +435,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonResponse));
+
         verifyNoInteractions(mainService);
     }
 
@@ -447,6 +469,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].order_id", is(1)))
                 .andExpect(jsonPath("$[1].order_id", is(2)));
+
         verify(mainService).getOrders(offset, limit);
         verifyNoMoreInteractions(mainService);
     }
@@ -484,6 +507,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonResponse));
+
         verifyNoInteractions(mainService);
     }
 
@@ -501,6 +525,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonResponse));
+
         verifyNoInteractions(mainService);
     }
 
@@ -522,6 +547,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
+
         verify(mainService).getOrderById(orderId);
         verifyNoMoreInteractions(mainService);
     }
@@ -549,6 +575,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.order_id", 0).value(containsString(output)));
+
         verifyNoInteractions(mainService);
     }
 
@@ -602,6 +629,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(content().json(jsonResponse));
+
         ArgumentCaptor<CompleteOrderRequest> captor = ArgumentCaptor.forClass(CompleteOrderRequest.class);
         verify(mainService).completeOrder(captor.capture());
         assertEquals(completeOrderRequest, captor.getValue());
@@ -684,6 +712,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(content().json(jsonResponse));
+
         ArgumentCaptor<CompleteOrderRequest> captor = ArgumentCaptor.forClass(CompleteOrderRequest.class);
         verify(mainService).completeOrder(captor.capture());
         assertEquals(completeOrderRequest, captor.getValue());
@@ -713,6 +742,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(response));
+
         ArgumentCaptor<CompleteOrderRequest> captor = ArgumentCaptor.forClass(CompleteOrderRequest.class);
         verify(mainService).completeOrder(captor.capture());
         assertFalse(captor.getValue().getCompleteOrders().isEmpty());
@@ -740,6 +770,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonResponse));
+
         verifyNoInteractions(mainService);
     }
 
@@ -766,6 +797,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(response));
+
         ArgumentCaptor<CompleteOrderRequest> captor = ArgumentCaptor.forClass(CompleteOrderRequest.class);
         verify(mainService).completeOrder(captor.capture());
         assertFalse(captor.getValue().getCompleteOrders().isEmpty());
@@ -800,6 +832,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(response));
+
         ArgumentCaptor<CompleteOrderRequest> captor = ArgumentCaptor.forClass(CompleteOrderRequest.class);
         verify(mainService).completeOrder(captor.capture());
         assertFalse(captor.getValue().getCompleteOrders().isEmpty());
@@ -834,6 +867,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(response));
+
         ArgumentCaptor<CompleteOrderRequest> captor = ArgumentCaptor.forClass(CompleteOrderRequest.class);
         verify(mainService).completeOrder(captor.capture());
         assertFalse(captor.getValue().getCompleteOrders().isEmpty());
@@ -867,6 +901,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(response));
+
         verifyNoInteractions(mainService);
     }
 
@@ -892,6 +927,7 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(response));
+
         verifyNoInteractions(mainService);
     }
 
@@ -917,7 +953,204 @@ public class OrderControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString(response)));
+
         verifyNoInteractions(mainService);
     }
 
+    @Test
+    public void assignOrdersWhenDateIsIllegalReturnBadRequest() throws Exception {
+        String response = "Failed to convert value of type 'java.lang.String' to required type 'java.time.LocalDate'";
+
+        this.mockMvc.perform(post("/orders/assign?date=2023-05-33"))
+                .andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.date", containsString(response)));
+
+        verifyNoInteractions(mainService);
+    }
+
+    @Test
+    public void assignOrdersWhenNoOneOrderAndDateIsNullReturnCreated() throws Exception {
+
+        OrderAssignResponse orderAssignResponse = new OrderAssignResponse(null, new ArrayList<>());
+        String jsonResponse = objectMapper.writeValueAsString(List.of(orderAssignResponse));
+
+        when(mainService.orderAssign(null)).thenReturn(orderAssignResponse);
+        this.mockMvc.perform(post("/orders/assign"))
+                .andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(content().json(jsonResponse));
+
+        verify(mainService).orderAssign(null);
+        verifyNoMoreInteractions(mainService);
+    }
+
+    @Test
+    public void assignOrdersWhenNoOneOrderAndDateIsSetReturnCreated() throws Exception {
+        LocalDate date = LocalDate.parse("2023-04-20");
+        OrderAssignResponse orderAssignResponse = new OrderAssignResponse(null, new ArrayList<>());
+        String jsonResponse = objectMapper.writeValueAsString(List.of(orderAssignResponse));
+
+        when(mainService.orderAssign(date)).thenReturn(orderAssignResponse);
+        this.mockMvc.perform(post("/orders/assign?date=2023-04-20"))
+                .andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(content().json(jsonResponse));
+
+        verify(mainService).orderAssign(date);
+        verifyNoMoreInteractions(mainService);
+    }
+
+    @Test
+    public void assignOrdersWhenOrdersAndCouriersExistsAndDateIsNullReturnCreated() throws Exception {
+        LocalDate date = LocalDate.now();
+        long courierId1 = 5;
+        Region region1 = new Region(1);
+
+        CourierDto courierDto1 = new CourierDto();
+        courierDto1.setId(courierId1);
+        courierDto1.setCourierType(CourierDto.CourierTypeEnum.FOOT);
+        courierDto1.setRegions(Arrays.asList(new Region(1), new Region(2)));
+        courierDto1.setWorkingHours(List.of("09:00-18:00", "19:00-21:00"));
+        courierDto1.setRating(10);
+        courierDto1.setEarnings(1150);
+
+        GroupOrders groupOrders1 = new GroupOrders();
+        groupOrders1.setDate(date);
+        groupOrders1.setCourierDto(courierDto1);
+
+        List<OrderDto> orders1 = IntStream.rangeClosed(1, 24).mapToObj(ind -> {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setCost(ind);
+            orderDto.setRegion(region1);
+            orderDto.setCompletedTime(OffsetDateTime.parse("2023-03-20T01:00:00.000+00"));
+            orderDto.setGroupOrders(groupOrders1);
+            return orderDto;
+        }).collect(Collectors.toList());
+
+        groupOrders1.setOrders(orders1);
+
+        CouriersGroupOrders couriersGroupOrders1 = new CouriersGroupOrders(courierId1, List.of(groupOrders1));
+
+        long courierId2 = 7;
+
+        Region region2 = new Region(11);
+
+        CourierDto courierDto2 = new CourierDto();
+        courierDto2.setId(courierId2);
+        courierDto2.setCourierType(CourierDto.CourierTypeEnum.FOOT);
+        courierDto2.setRegions(Arrays.asList(region1, region2));
+        courierDto2.setWorkingHours(List.of("09:00-18:00", "19:00-21:00"));
+        courierDto2.setRating(9);
+        courierDto2.setEarnings(100);
+
+        GroupOrders groupOrders2 = new GroupOrders();
+        groupOrders2.setDate(date);
+        groupOrders2.setCourierDto(courierDto2);
+
+        List<OrderDto> orders2 = IntStream.rangeClosed(1, 24).mapToObj(ind -> {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setCost(ind);
+            orderDto.setRegion(region2);
+            orderDto.setCompletedTime(OffsetDateTime.parse("2023-03-20T01:00:00.000+00"));
+            orderDto.setGroupOrders(groupOrders2);
+            return orderDto;
+        }).collect(Collectors.toList());
+
+        groupOrders2.setOrders(orders2);
+
+        CouriersGroupOrders couriersGroupOrders2 = new CouriersGroupOrders(courierId2, List.of(groupOrders2));
+
+        OrderAssignResponse orderAssignResponse = new OrderAssignResponse(date,
+                List.of(couriersGroupOrders1, couriersGroupOrders2));
+
+        String jsonResponse = objectMapper.writeValueAsString(List.of(orderAssignResponse));
+
+        when(mainService.orderAssign(null)).thenReturn(orderAssignResponse);
+        this.mockMvc.perform(post("/orders/assign"))
+                .andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(content().json(jsonResponse));
+
+        verify(mainService).orderAssign(null);
+        verifyNoMoreInteractions(mainService);
+    }
+
+    @Test
+    public void assignOrdersWhenOrdersAndCouriersExistsAndDateIsSetReturnCreated() throws Exception {
+        String dateText = "2023-04-20";
+        LocalDate date = LocalDate.parse(dateText);
+        long courierId1 = 5;
+        Region region1 = new Region(1);
+
+        CourierDto courierDto1 = new CourierDto();
+        courierDto1.setId(courierId1);
+        courierDto1.setCourierType(CourierDto.CourierTypeEnum.FOOT);
+        courierDto1.setRegions(Arrays.asList(new Region(1), new Region(2)));
+        courierDto1.setWorkingHours(List.of("09:00-18:00", "19:00-21:00"));
+        courierDto1.setRating(10);
+        courierDto1.setEarnings(1150);
+
+        GroupOrders groupOrders1 = new GroupOrders(date, courierDto1);
+
+        List<OrderDto> orders1 = IntStream.rangeClosed(1, 24).mapToObj(ind -> {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setCost(ind);
+            orderDto.setRegion(region1);
+            orderDto.setCompletedTime(OffsetDateTime.parse("2023-03-20T01:00:00.000+00"));
+            orderDto.setGroupOrders(groupOrders1);
+            return orderDto;
+        }).collect(Collectors.toList());
+
+        groupOrders1.setOrders(orders1);
+
+        CouriersGroupOrders couriersGroupOrders1 = new CouriersGroupOrders(courierId1, List.of(groupOrders1));
+
+        long courierId2 = 7;
+
+        Region region2 = new Region(11);
+
+        CourierDto courierDto2 = new CourierDto();
+        courierDto2.setId(courierId2);
+        courierDto2.setCourierType(CourierDto.CourierTypeEnum.FOOT);
+        courierDto2.setRegions(Arrays.asList(region1, region2));
+        courierDto2.setWorkingHours(List.of("09:00-18:00", "19:00-21:00"));
+        courierDto2.setRating(9);
+        courierDto2.setEarnings(100);
+
+        GroupOrders groupOrders2 = new GroupOrders(date, courierDto2);
+
+        List<OrderDto> orders2 = IntStream.rangeClosed(1, 24).mapToObj(ind -> {
+            OrderDto orderDto = new OrderDto();
+            orderDto.setCost(ind);
+            orderDto.setRegion(region2);
+            orderDto.setCompletedTime(OffsetDateTime.parse("2023-03-20T01:00:00.000+00"));
+            orderDto.setGroupOrders(groupOrders2);
+            return orderDto;
+        }).collect(Collectors.toList());
+
+        groupOrders2.setOrders(orders2);
+
+        CouriersGroupOrders couriersGroupOrders2 = new CouriersGroupOrders(courierId2, List.of(groupOrders2));
+
+        OrderAssignResponse orderAssignResponse = new OrderAssignResponse(date,
+                List.of(couriersGroupOrders1, couriersGroupOrders2));
+
+
+        String jsonResponse = objectMapper.writeValueAsString(List.of(orderAssignResponse));
+
+        when(mainService.orderAssign(date)).thenReturn(orderAssignResponse);
+        this.mockMvc.perform(post("/orders/assign?date=" + dateText))
+                .andDo(print())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(content().json(jsonResponse));
+
+        verify(mainService).orderAssign(date);
+        verifyNoMoreInteractions(mainService);
+    }
 }

@@ -9,6 +9,7 @@ import java.util.List;
 
 @Data
 public class CreateOrderRequest {
+
     @JsonProperty("orders")
     @NotNull
     List<@Valid CreateOrderDto> orders;

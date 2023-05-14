@@ -16,29 +16,31 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import ru.yandex.yandexlavka.CommonTest;
+import ru.yandex.yandexlavka.model.dto.CompleteOrderRequest;
+import ru.yandex.yandexlavka.model.dto.CouriersGroupOrders;
 import ru.yandex.yandexlavka.model.dto.CreateCourierRequest;
 import ru.yandex.yandexlavka.model.dto.CreateOrderRequest;
+import ru.yandex.yandexlavka.model.dto.OrderAssignResponse;
 import ru.yandex.yandexlavka.model.entity.CourierDto;
+import ru.yandex.yandexlavka.model.entity.GroupOrders;
 import ru.yandex.yandexlavka.model.entity.OrderDto;
 import ru.yandex.yandexlavka.model.entity.Region;
 import ru.yandex.yandexlavka.service.MainService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@WebMvcTest
-//@SpringBootTest(classes = {CourierController.class,OrderController.class,HealthController.class})
 @SpringBootTest
 @AutoConfigureMockMvc
-//@ActiveProfiles("test-h2")
-//@WebMvcTest(HealthController.class)
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
         DataSourceTransactionManagerAutoConfiguration.class,
         HibernateJpaAutoConfiguration.class})
@@ -57,16 +59,6 @@ public class RateLimiterControllerTest extends CommonTest {
         registry.add("resilience4j.ratelimiter.configs.default.limitRefreshPeriod", () -> "10s");
         registry.add("resilience4j.ratelimiter.configs.default.timeoutDuration", () -> "100ms");
     }
-
-    @RepeatedTest(10)
-    public void healthControllerRateLimiter(
-            RepetitionInfo repetitionInfo) throws Exception {
-        ResultMatcher result = repetitionInfo.getCurrentRepetition()
-                <= REQUEST_PER_PERIOD ? status().isOk() : status().isTooManyRequests();
-        mockMvc.perform(get("/ping"))
-                .andExpect(result);
-    }
-
 
     @RepeatedTest(10)
     public void courierControllerGetCourierByIdRateLimiter(
@@ -119,6 +111,30 @@ public class RateLimiterControllerTest extends CommonTest {
         when(mainService.createCouriers(new CreateCourierRequest())).thenReturn(new ArrayList<>());
         mockMvc.perform(post("/couriers")
                         .content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(result);
+    }
+
+    @RepeatedTest(10)
+    public void courierControllerGetСouriersAssignmentsRateLimiter(
+            RepetitionInfo repetitionInfo) throws Exception {
+        ResultMatcher result = repetitionInfo.getCurrentRepetition()
+                <= REQUEST_PER_PERIOD ? status().isOk() : status().isTooManyRequests();
+
+        when(mainService.getCouriersAssignments(any(Long.class), any(LocalDate.class))).thenReturn(null);
+        mockMvc.perform(get("/couriers/assignments"))
+                .andDo(print())
+                .andExpect(result);
+    }
+
+    @RepeatedTest(10)
+    public void courierControllerGetСourierMetaInfoRateLimiter(
+            RepetitionInfo repetitionInfo) throws Exception {
+        ResultMatcher result = repetitionInfo.getCurrentRepetition()
+                <= REQUEST_PER_PERIOD ? status().isOk() : status().isTooManyRequests();
+
+        when(mainService.getCourierMetaInfo(any(Long.class), any(LocalDate.class), any(LocalDate.class))).thenReturn(null);
+        mockMvc.perform(get("/couriers/meta-info/1?start_date=2023-01-01&end_date=2023-12-31"))
                 .andDo(print())
                 .andExpect(result);
     }
@@ -177,6 +193,47 @@ public class RateLimiterControllerTest extends CommonTest {
         when(mainService.createOrders(new CreateOrderRequest())).thenReturn(new ArrayList<>());
         mockMvc.perform(post("/orders")
                         .content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(result);
+    }
+
+    @RepeatedTest(10)
+    public void orderControllerCompleteOrderRateLimiter(
+            RepetitionInfo repetitionInfo) throws Exception {
+        String jsonRequest = """
+                    {
+                      "complete_info": [
+                        {
+                          "courier_id": 1,
+                          "order_id": 1,
+                          "complete_time":"2023-05-23T04:56:07.000+00:00"
+                        }
+                      ]
+                    }
+                """;
+        ResultMatcher result = repetitionInfo.getCurrentRepetition()
+                <= REQUEST_PER_PERIOD ? status().isOk() : status().isTooManyRequests();
+
+        when(mainService.completeOrder(new CompleteOrderRequest())).thenReturn(new ArrayList<>());
+        mockMvc.perform(post("/orders/complete")
+                        .content(jsonRequest).contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(result);
+    }
+
+    @RepeatedTest(10)
+    public void orderControllerAssignOrderRateLimiter(
+            RepetitionInfo repetitionInfo) throws Exception {
+        ResultMatcher result = repetitionInfo.getCurrentRepetition()
+                <= REQUEST_PER_PERIOD ? status().isCreated() : status().isTooManyRequests();
+
+        GroupOrders groupOrders = new GroupOrders();
+        groupOrders.setDate(LocalDate.now());
+        CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders(1, List.of(groupOrders));
+
+        OrderAssignResponse orderAssignResponse = new OrderAssignResponse(LocalDate.now(), List.of(couriersGroupOrders));
+        when(mainService.orderAssign(null)).thenReturn(orderAssignResponse);
+        mockMvc.perform(post("/orders/assign"))
                 .andDo(print())
                 .andExpect(result);
     }

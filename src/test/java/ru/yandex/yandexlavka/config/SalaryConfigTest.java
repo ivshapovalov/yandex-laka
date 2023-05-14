@@ -1,4 +1,4 @@
-package ru.yandex.yandexlavka;
+package ru.yandex.yandexlavka.config;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,32 +8,29 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import ru.yandex.yandexlavka.controller.CourierController;
-import ru.yandex.yandexlavka.controller.OrderController;
+import ru.yandex.yandexlavka.CommonTest;
 import ru.yandex.yandexlavka.service.MainService;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
         DataSourceTransactionManagerAutoConfiguration.class,
         HibernateJpaAutoConfiguration.class})
-class YandexLavkaApplicationTests extends CommonTest {
+public class SalaryConfigTest extends CommonTest {
 
     @Autowired
-    private CourierController courierController;
-
-    @Autowired
-    private OrderController orderController;
+    private SalaryConfig salaryConfig;
 
     @MockBean
     private MainService mainService;
 
     @Test
-    public void contextLoads() throws Exception {
-        assertNotNull(courierController);
-        assertNotNull(orderController);
+    public void getSalaryConfigWhenYamlFileProvidedMaps() {
+        assertThat(salaryConfig.getEarningsFactors())
+                .containsOnlyKeys("foot", "bike", "auto");
+
+        assertThat(salaryConfig.getRatingFactors())
+                .containsOnlyKeys("foot", "bike", "auto");
     }
-
-
 }

@@ -9,6 +9,7 @@ import ru.yandex.yandexlavka.model.entity.GroupOrders;
 import ru.yandex.yandexlavka.model.entity.OrderDto;
 import ru.yandex.yandexlavka.model.entity.Region;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,7 +80,7 @@ public class OrderRepositoryTest extends CommonTest {
         orderDto2.setCost(200);
         orderDto2.setWeight(200.0F);
         orderDto2.setRegion(region2);
-        orderDto2.setDeliveryHours(List.of("20:00-18:00", "08:00-12:00"));
+        orderDto2.setDeliveryHours(List.of("15:00-18:00", "08:00-12:00"));
         orderRepository.saveAndFlush(orderDto2);
 
         OrderDto orderDto3 = new OrderDto();
@@ -115,7 +116,7 @@ public class OrderRepositoryTest extends CommonTest {
         orderDto2.setCost(200);
         orderDto2.setWeight(200.0F);
         orderDto2.setRegion(region2);
-        orderDto2.setDeliveryHours(List.of("20:00-18:00", "08:00-12:00"));
+        orderDto2.setDeliveryHours(List.of("15:00-18:00", "08:00-12:00"));
         orderRepository.saveAndFlush(orderDto2);
 
         OrderDto orderDto3 = new OrderDto();
@@ -151,7 +152,7 @@ public class OrderRepositoryTest extends CommonTest {
         orderDto2.setCost(200);
         orderDto2.setWeight(200.0F);
         orderDto2.setRegion(region2);
-        orderDto2.setDeliveryHours(List.of("20:00-18:00", "08:00-12:00"));
+        orderDto2.setDeliveryHours(List.of("15:00-18:00", "08:00-12:00"));
         orderRepository.saveAndFlush(orderDto2);
 
         OrderDto orderDto3 = new OrderDto();
@@ -187,7 +188,7 @@ public class OrderRepositoryTest extends CommonTest {
         orderDto2.setCost(200);
         orderDto2.setWeight(200.0F);
         orderDto2.setRegion(region2);
-        orderDto2.setDeliveryHours(List.of("20:00-18:00", "08:00-12:00"));
+        orderDto2.setDeliveryHours(List.of("15:00-18:00", "08:00-12:00"));
         orderRepository.saveAndFlush(orderDto2);
 
         OrderDto orderDto3 = new OrderDto();
@@ -251,6 +252,7 @@ public class OrderRepositoryTest extends CommonTest {
         List<OrderDto> ordersAll = new ArrayList<>(ordersBefore);
         ordersAll.addAll(ordersAfter);
 
+        groupOrders.setDate(LocalDate.now());
         groupOrders.setOrders(ordersAll);
         groupOrdersRepository.saveAndFlush(groupOrders);
 
@@ -280,6 +282,7 @@ public class OrderRepositoryTest extends CommonTest {
             return orderDto;
         }).collect(Collectors.toList());
 
+        groupOrders.setDate(LocalDate.now());
         groupOrders.setOrders(completedOrders);
         groupOrdersRepository.saveAndFlush(groupOrders);
 
@@ -327,6 +330,7 @@ public class OrderRepositoryTest extends CommonTest {
         ordersAll.addAll(ordersInPeriod);
         ordersAll.addAll(ordersAfterPeriod);
 
+        groupOrders.setDate(LocalDate.now());
         groupOrders.setOrders(ordersAll);
         groupOrdersRepository.saveAndFlush(groupOrders);
 

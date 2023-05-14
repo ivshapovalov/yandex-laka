@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.yandex.yandexlavka.CommonTest;
@@ -50,13 +49,6 @@ class IntegrationTest extends CommonTest {
 
     @Autowired
     private OrderRepository orderRepository;
-
-//    @AfterEach
-//    void deleteEntities() {
-//        courierRepository.deleteAll();
-//        regionRepository.deleteAll();
-//        orderRepository.deleteAll();
-//    }
 
     @Test
     void createCouriersWhenOneCourierInRequestWorksThroughAllLayers() throws Exception {
@@ -147,6 +139,5 @@ class IntegrationTest extends CommonTest {
         assertEquals(2, couriers.size());
         assertIterableEquals(response, couriers);
     }
-
 }
 

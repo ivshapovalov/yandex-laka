@@ -5,14 +5,16 @@ import jakarta.validation.Valid;
 import lombok.Data;
 import ru.yandex.yandexlavka.model.entity.GroupOrders;
 
+import java.util.List;
+
 @Data
 public class CouriersGroupOrders {
 
     @JsonProperty("courier_id")
-    private long courierId;
+    private final long courierId;
 
     @JsonProperty("orders")
     @Valid
-    private GroupOrders groupOrders;
+    private final List<GroupOrders> groupOrders;
 
 }

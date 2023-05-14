@@ -77,6 +77,7 @@ public class GroupOrdersRepositoryTest extends CommonTest {
         LocalDate currentDate = LocalDate.now();
 
         CourierDto courierDto = new CourierDto();
+        courierDto.setCourierType(CourierDto.CourierTypeEnum.BIKE);
 
         GroupOrders groupOrders1 = new GroupOrders();
         groupOrders1.setDate(currentDate);
@@ -95,8 +96,13 @@ public class GroupOrdersRepositoryTest extends CommonTest {
         LocalDate currentDate = LocalDate.now();
 
         CourierDto courierDto1 = new CourierDto();
+        courierDto1.setCourierType(CourierDto.CourierTypeEnum.FOOT);
+
         CourierDto courierDto2 = new CourierDto();
+        courierDto2.setCourierType(CourierDto.CourierTypeEnum.BIKE);
+
         CourierDto courierDto3 = new CourierDto();
+        courierDto3.setCourierType(CourierDto.CourierTypeEnum.AUTO);
 
         GroupOrders groupOrdersCourier1_1 = new GroupOrders();
         groupOrdersCourier1_1.setDate(currentDate);
@@ -121,7 +127,7 @@ public class GroupOrdersRepositoryTest extends CommonTest {
                 courierDto1.getId(),
                 currentDate);
         assertEquals(2, groupOrdersList.size());
-        assertIterableEquals(List.of(groupOrdersCourier1_1,groupOrdersCourier1_2), groupOrdersList);
+        assertIterableEquals(List.of(groupOrdersCourier1_1, groupOrdersCourier1_2), groupOrdersList);
     }
 
     @Test
@@ -129,6 +135,7 @@ public class GroupOrdersRepositoryTest extends CommonTest {
         LocalDate currentDate = LocalDate.now();
 
         CourierDto courierDto1 = new CourierDto();
+        courierDto1.setCourierType(CourierDto.CourierTypeEnum.BIKE);
 
         GroupOrders groupOrdersCourier1_1 = new GroupOrders();
         groupOrdersCourier1_1.setDate(currentDate);
@@ -153,7 +160,7 @@ public class GroupOrdersRepositoryTest extends CommonTest {
                 courierDto1.getId(),
                 currentDate);
         assertEquals(2, groupOrdersList.size());
-        assertIterableEquals(List.of(groupOrdersCourier1_1,groupOrdersCourier1_4), groupOrdersList);
+        assertIterableEquals(List.of(groupOrdersCourier1_1, groupOrdersCourier1_4), groupOrdersList);
     }
 
     @Test
@@ -161,8 +168,13 @@ public class GroupOrdersRepositoryTest extends CommonTest {
         LocalDate currentDate = LocalDate.now();
 
         CourierDto courierDto1 = new CourierDto();
+        courierDto1.setCourierType(CourierDto.CourierTypeEnum.BIKE);
+
         CourierDto courierDto2 = new CourierDto();
+        courierDto2.setCourierType(CourierDto.CourierTypeEnum.FOOT);
+
         CourierDto courierDto3 = new CourierDto();
+        courierDto3.setCourierType(CourierDto.CourierTypeEnum.AUTO);
 
         GroupOrders groupOrdersCourier1_1 = new GroupOrders();
         groupOrdersCourier1_1.setDate(currentDate);
@@ -200,7 +212,7 @@ public class GroupOrdersRepositoryTest extends CommonTest {
                 courierDto1.getId(),
                 currentDate);
         assertEquals(2, groupOrdersList.size());
-        assertIterableEquals(List.of(groupOrdersCourier1_1,groupOrdersCourier1_4), groupOrdersList);
+        assertIterableEquals(List.of(groupOrdersCourier1_1, groupOrdersCourier1_4), groupOrdersList);
     }
 
 }

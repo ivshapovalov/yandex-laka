@@ -1,11 +1,12 @@
 package ru.yandex.yandexlavka.service;
 
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.yandex.yandexlavka.config.SalaryConfig;
 import ru.yandex.yandexlavka.exceptions.CourierNotFoundException;
 import ru.yandex.yandexlavka.exceptions.CourierOrderNotFoundException;
 import ru.yandex.yandexlavka.exceptions.OrderAlreadyCompletedException;
-import ru.yandex.yandexlavka.exceptions.OrderImpossibleException;
 import ru.yandex.yandexlavka.exceptions.OrderNotFoundException;
 import ru.yandex.yandexlavka.model.dto.CompleteOrderDto;
 import ru.yandex.yandexlavka.model.dto.CompleteOrderRequest;
@@ -27,30 +28,21 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class MainService {
 
-    private CourierRepository courierRepository;
-    private OrderRepository orderRepository;
-    private RegionRepository regionRepository;
-    private GroupOrdersRepository groupOrdersRepository;
-
-    public MainService(CourierRepository courierRepository,
-                       OrderRepository orderRepository,
-                       RegionRepository regionRepository,
-                       GroupOrdersRepository groupOrdersRepository) {
-        this.courierRepository = courierRepository;
-        this.orderRepository = orderRepository;
-        this.regionRepository = regionRepository;
-        this.groupOrdersRepository = groupOrdersRepository;
-    }
+    private final VrpService vrpService;
+    private final SalaryConfig salaryConfig;
+    private final CourierRepository courierRepository;
+    private final OrderRepository orderRepository;
+    private final RegionRepository regionRepository;
+    private final GroupOrdersRepository groupOrdersRepository;
 
     @Transactional
     public List<CourierDto> createCouriers(CreateCourierRequest createCourierRequest) {
@@ -59,7 +51,7 @@ public class MainService {
                     List<Region> newRegions = new ArrayList<>();
                     List<Region> oldRegions = new ArrayList<>();
 
-                    createCourierDto.getRegions().stream().forEach(regionId -> {
+                    createCourierDto.getRegions().forEach(regionId -> {
                         Optional<Region> regionFound = regionRepository.findById(regionId);
                         if (regionFound.isEmpty()) {
                             newRegions.add(new Region(regionId));
@@ -71,8 +63,7 @@ public class MainService {
                     if (!newRegions.isEmpty()) {
                         regions.addAll(regionRepository.saveAll(newRegions));
                     }
-                    CourierDto courierDto = createCourierDto.toCourierDto(regions);
-                    return courierDto;
+                    return createCourierDto.toCourierDto(regions);
                 })
                 .collect(Collectors.toList());
         courierRepository.saveAll(couriers);
@@ -136,47 +127,7 @@ public class MainService {
         return completedOrders;
     }
 
-    @Transactional
-    public List<OrderAssignResponse> orderAssign(LocalDate date) {
-        LocalDate currentDate = date == null ? LocalDate.now() : date;
-        //simple straightforward method
-        List<OrderAssignResponse> orderAssignResponse = distributeOrdersSimple(currentDate);
-        return orderAssignResponse;
-    }
-
-    private List<OrderAssignResponse> distributeOrdersSimple(LocalDate currentDate) {
-        List<OrderDto> orders = orderRepository.findAllByCompletedTimeIsNull();
-        List<CourierDto> couriers = courierRepository.findAll(0, Integer.MAX_VALUE);
-        List<OrderAssignResponse> response = new ArrayList<>();
-        List<GroupOrders> groupOrdersList = new ArrayList<>();
-        for (OrderDto order : orders) {
-            CourierDto courier = couriers.stream().filter(
-                            curCourier -> curCourier.getRegions().contains(order.getRegion()))
-                    .findFirst().orElseThrow(() -> new OrderImpossibleException(order.getId()));
-            couriers.remove(courier);
-            GroupOrders groupOrders = new GroupOrders();
-            groupOrders.setDate(currentDate);
-            groupOrders.setCourierDto(courier);
-            courier.setGroupOrders(Arrays.asList(groupOrders));
-            order.setGroupOrders(groupOrders);
-            groupOrders.addOrder(order);
-
-            groupOrdersList.add(groupOrders);
-
-            CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders();
-            couriersGroupOrders.setCourierId(courier.getId());
-            couriersGroupOrders.setGroupOrders(groupOrders);
-            OrderAssignResponse orderAssignResponse = new OrderAssignResponse();
-            orderAssignResponse.setDate(currentDate);
-            orderAssignResponse.setCouriersGroupOrders(Arrays.asList(couriersGroupOrders));
-            response.add(orderAssignResponse);
-
-        }
-        orderRepository.saveAllAndFlush(orders);
-        return response;
-    }
-
-    public List<OrderAssignResponse> getCouriersAssignments(Long courierId, LocalDate date) {
+    public OrderAssignResponse getCouriersAssignments(Long courierId, LocalDate date) {
         LocalDate currentDate = (date == null ? LocalDate.now() : date);
         if (courierId != null) {
             return getSpecificCouriersAssignments(courierId, currentDate);
@@ -185,45 +136,26 @@ public class MainService {
         }
     }
 
-    private List<OrderAssignResponse> getSpecificCouriersAssignments(Long courierId, LocalDate currentDate) {
+    private OrderAssignResponse getSpecificCouriersAssignments(Long courierId, LocalDate currentDate) {
         List<GroupOrders> groupOrdersList =
                 groupOrdersRepository.findAllByCourierIdEqualsAndDateEquals(courierId, currentDate);
-        List<CouriersGroupOrders> courierGroupOrders = groupOrdersList.stream().map(groupOrders -> {
-            CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders();
-            couriersGroupOrders.setCourierId(courierId);
-            couriersGroupOrders.setGroupOrders(groupOrders);
-            return couriersGroupOrders;
-        }).collect(Collectors.toList());
-
-        OrderAssignResponse orderAssignResponse = new OrderAssignResponse();
-        orderAssignResponse.setDate(currentDate);
-        orderAssignResponse.setCouriersGroupOrders(courierGroupOrders);
-        return List.of(orderAssignResponse);
+        CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders(courierId, groupOrdersList);
+        return new OrderAssignResponse(currentDate, List.of(couriersGroupOrders));
     }
 
-    private List<OrderAssignResponse> getAllCouriersAssignments(LocalDate currentDate) {
+    private OrderAssignResponse getAllCouriersAssignments(LocalDate currentDate) {
         List<GroupOrders> groupOrdersList = groupOrdersRepository.findAllByDateEquals(currentDate);
         Map<CourierDto, List<GroupOrders>> groupOrdersMap = groupOrdersList.stream()
                 .collect(Collectors.groupingBy(GroupOrders::getCourierDto));
-        List<OrderAssignResponse> orderAssignResponses =
-                groupOrdersMap.entrySet().stream()
-                        .sorted(Map.Entry.comparingByKey(Comparator.comparingLong(CourierDto::getId)))
-                        .map(entry -> {
-                            List<CouriersGroupOrders> courierGroupOrders =
-                                    entry.getValue().stream()
-                                            .sorted(Comparator.comparingLong(GroupOrders::getId))
-                                            .map(groupOrders -> {
-                                                CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders();
-                                                couriersGroupOrders.setCourierId(groupOrders.getCourierDto().getId());
-                                                couriersGroupOrders.setGroupOrders(groupOrders);
-                                                return couriersGroupOrders;
-                                            }).collect(Collectors.toList());
-                            OrderAssignResponse orderAssignResponse = new OrderAssignResponse();
-                            orderAssignResponse.setDate(currentDate);
-                            orderAssignResponse.setCouriersGroupOrders(courierGroupOrders);
-                            return orderAssignResponse;
-                        }).collect(Collectors.toList());
-        return orderAssignResponses;
+
+        List<CouriersGroupOrders> couriersGroupOrdersList = groupOrdersMap.entrySet().stream()
+                .sorted((o1, o2) -> (int) (o1.getKey().getId() - o2.getKey().getId()))
+                .map(entry -> new CouriersGroupOrders(entry.getKey().getId(),
+                        entry.getValue().stream()
+                                .sorted((g1, g2) -> (int) (g1.getId() - g2.getId()))
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toList());
+        return new OrderAssignResponse(currentDate, couriersGroupOrdersList);
     }
 
     public CourierDto getCourierMetaInfo(long courierId, LocalDate startDate, LocalDate endDate) {
@@ -231,18 +163,6 @@ public class MainService {
         OffsetDateTime endOffsetDateTime = OffsetDateTime.of(endDate, LocalTime.MIN, ZoneOffset.UTC);
         CourierDto courierDto =
                 courierRepository.findById(courierId).orElseThrow(() -> new CourierNotFoundException(courierId));
-//        List<Long> courierOrderIds =
-//                courierDto.getGroupOrders().stream()
-//                        .flatMap(el -> el.getOrders().stream())
-//                        .map(el->el.getId())
-//                        .collect(Collectors.toList());
-//
-//        List<OrderDto> orders =
-//                orderRepository.findAllByIdAndCompletedTimeGreaterThanEqualAndCompletedTimeLessThan(
-//                        courierOrderIds,
-//                        startOffsetDateTime,
-//                        endOffsetDateTime
-//                );
         List<OrderDto> orders =
                 orderRepository.findAllByGroupOrdersInAndCompletedTimeGreaterThanEqualAndCompletedTimeLessThan(
                         courierDto.getGroupOrders(),
@@ -250,9 +170,27 @@ public class MainService {
                         endOffsetDateTime
                 );
         if (orders.size() > 0) {
-            courierDto.calculateEarnings(orders);
-            courierDto.calculateRating(orders, startDate, endDate);
+            courierDto.calculateEarnings(salaryConfig, orders);
+            courierDto.calculateRating(salaryConfig, orders.size(), startDate, endDate);
         }
         return courierDto;
+    }
+
+    public OrderAssignResponse orderAssign(LocalDate date) {
+        LocalDate currentDate = (date == null) ? LocalDate.now() : date;
+
+        List<OrderDto> orders = orderRepository.findAllByCompletedTimeIsNull();
+        List<CourierDto> couriers = courierRepository.findAll(0, Integer.MAX_VALUE);
+        OrderAssignResponse orderAssignResponse;
+        if (couriers.size() > 0 && orders.size() > 0) {
+            orderAssignResponse = vrpService.solve(currentDate, couriers, orders);
+            List<GroupOrders> groupOrdersList = orderAssignResponse.getCouriersGroupOrdersList().stream()
+                    .flatMap(couriersGroupOrders -> couriersGroupOrders.getGroupOrders().stream())
+                    .collect(Collectors.toList());
+            groupOrdersRepository.saveAllAndFlush(groupOrdersList);
+        } else {
+            orderAssignResponse = new OrderAssignResponse(currentDate, new ArrayList<>());
+        }
+        return orderAssignResponse;
     }
 }

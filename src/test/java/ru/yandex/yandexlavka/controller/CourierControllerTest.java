@@ -422,17 +422,24 @@ public class CourierControllerTest extends CommonTest {
                       "courier_type":"FOOT",
                       "regions": [1,2,3],
                       "working_hours":["12:00--23:00"]
-                    }                                    
+                    },
+                     {
+                      "courier_type":"FOOT",
+                      "regions": [1,2,3],
+                      "working_hours":["22:00-05:00"]
+                    }                                                           
                   ]
                 }
                 """;
         String jsonResponse = """
                     {
+                        "couriers[5].workingHours[]":"Invalid time window interval",
                         "couriers[1].workingHours": "must not be empty",
                         "couriers[2].workingHours[]": "must match \\"(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]-(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]\\"",
                         "couriers[4].workingHours[]": "must match \\"(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]-(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]\\"",
                         "couriers[0].workingHours[]": "must match \\"(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]-(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]\\"",
                         "couriers[3].workingHours[]": "must match \\"(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]-(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]\\""
+                                          
                     }
                 """;
 
@@ -526,6 +533,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].courier_id", is(1)))
                 .andExpect(jsonPath("$[1].courier_id", is(2)));
+
         verify(mainService).getCouriers(offset, limit);
         verifyNoMoreInteractions(mainService);
     }
@@ -546,6 +554,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonResponse));
+
         verifyNoInteractions(mainService);
     }
 
@@ -563,6 +572,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonResponse));
+
         verifyNoInteractions(mainService);
     }
 
@@ -580,6 +590,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json(jsonResponse));
+
         verifyNoInteractions(mainService);
     }
 
@@ -600,8 +611,8 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
-//                .andExpect(jsonPath("$.courier_id", is(courierId)));
         verify(mainService).getCourierById(courierId);
+
         verifyNoMoreInteractions(mainService);
     }
 
@@ -628,6 +639,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.courier_id", 0).value(containsString(outputMin)));
+
         verifyNoInteractions(mainService);
     }
 
@@ -653,6 +665,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
+
         verify(mainService).getCourierMetaInfo(courierId, startDate, endDate);
         verifyNoMoreInteractions(mainService);
     }
@@ -669,6 +682,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.parseMediaType("text/plain;charset=UTF-8")))
                 .andExpect(content().string("Could not find courier with id " + courierId))
                 .andExpect(status().isBadRequest());
+
         verify(mainService).getCourierMetaInfo(courierId, startDate, endDate);
         verifyNoMoreInteractions(mainService);
     }
@@ -685,6 +699,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.start_date", containsString(response)));
+
         verifyNoInteractions(mainService);
     }
 
@@ -700,6 +715,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.end_date", containsString(response)));
+
         verifyNoInteractions(mainService);
     }
 
@@ -714,6 +730,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.start_date", containsString(response)));
+
         verifyNoInteractions(mainService);
     }
 
@@ -727,6 +744,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.courier_id", containsString(response)));
+
         verifyNoInteractions(mainService);
     }
 
@@ -740,6 +758,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.courier_id", containsString(response)));
+
         verifyNoInteractions(mainService);
     }
 
@@ -753,6 +772,7 @@ public class CourierControllerTest extends CommonTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.date", containsString(response)));
+
         verifyNoInteractions(mainService);
     }
 
@@ -786,22 +806,19 @@ public class CourierControllerTest extends CommonTest {
 
         groupOrders.setOrders(orders);
 
-        CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders();
-        couriersGroupOrders.setCourierId(courierId);
-        couriersGroupOrders.setGroupOrders(groupOrders);
+        CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders(courierId, List.of(groupOrders));
 
-        OrderAssignResponse orderAssignResponse = new OrderAssignResponse();
-        orderAssignResponse.setDate(date);
-        orderAssignResponse.setCouriersGroupOrders(List.of(couriersGroupOrders));
+        OrderAssignResponse orderAssignResponse = new OrderAssignResponse(date, List.of(couriersGroupOrders));
 
-        String jsonResponse = objectMapper.writeValueAsString(List.of(orderAssignResponse));
+        String jsonResponse = objectMapper.writeValueAsString(orderAssignResponse);
 
-        when(mainService.getCouriersAssignments(courierId, date)).thenReturn(List.of(orderAssignResponse));
+        when(mainService.getCouriersAssignments(courierId, date)).thenReturn(orderAssignResponse);
         mockMvc.perform(get(format("/couriers/assignments?courier_id=%d&date=%s", courierId, date)))
                 .andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
+
         verify(mainService).getCouriersAssignments(courierId, date);
         verifyNoMoreInteractions(mainService);
     }
@@ -835,23 +852,18 @@ public class CourierControllerTest extends CommonTest {
         }).collect(Collectors.toList());
 
         groupOrders.setOrders(orders);
+        CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders(courierId, List.of(groupOrders));
+        OrderAssignResponse orderAssignResponse = new OrderAssignResponse(date, List.of(couriersGroupOrders));
 
-        CouriersGroupOrders couriersGroupOrders = new CouriersGroupOrders();
-        couriersGroupOrders.setCourierId(courierId);
-        couriersGroupOrders.setGroupOrders(groupOrders);
+        String jsonResponse = objectMapper.writeValueAsString(orderAssignResponse);
 
-        OrderAssignResponse orderAssignResponse = new OrderAssignResponse();
-        orderAssignResponse.setDate(date);
-        orderAssignResponse.setCouriersGroupOrders(List.of(couriersGroupOrders));
-
-        String jsonResponse = objectMapper.writeValueAsString(List.of(orderAssignResponse));
-
-        when(mainService.getCouriersAssignments(courierId, null)).thenReturn(List.of(orderAssignResponse));
+        when(mainService.getCouriersAssignments(courierId, null)).thenReturn(orderAssignResponse);
         mockMvc.perform(get(format("/couriers/assignments?courier_id=%d", courierId)))
                 .andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
+
         verify(mainService).getCouriersAssignments(courierId, null);
         verifyNoMoreInteractions(mainService);
     }
@@ -886,13 +898,7 @@ public class CourierControllerTest extends CommonTest {
 
         groupOrders1.setOrders(orders1);
 
-        CouriersGroupOrders couriersGroupOrders1 = new CouriersGroupOrders();
-        couriersGroupOrders1.setCourierId(courierId1);
-        couriersGroupOrders1.setGroupOrders(groupOrders1);
-
-        OrderAssignResponse orderAssignResponse1 = new OrderAssignResponse();
-        orderAssignResponse1.setDate(date);
-        orderAssignResponse1.setCouriersGroupOrders(List.of(couriersGroupOrders1));
+        CouriersGroupOrders couriersGroupOrders1 = new CouriersGroupOrders(courierId1, List.of(groupOrders1));
 
         long courierId2 = 7;
 
@@ -921,18 +927,15 @@ public class CourierControllerTest extends CommonTest {
 
         groupOrders2.setOrders(orders2);
 
-        CouriersGroupOrders couriersGroupOrders2 = new CouriersGroupOrders();
-        couriersGroupOrders2.setCourierId(courierId2);
-        couriersGroupOrders2.setGroupOrders(groupOrders2);
+        CouriersGroupOrders couriersGroupOrders2 = new CouriersGroupOrders(courierId2, List.of(groupOrders2));
 
-        OrderAssignResponse orderAssignResponse2 = new OrderAssignResponse();
-        orderAssignResponse2.setDate(date);
-        orderAssignResponse2.setCouriersGroupOrders(List.of(couriersGroupOrders2));
+        OrderAssignResponse orderAssignResponse1 = new OrderAssignResponse(date,
+                List.of(couriersGroupOrders1, couriersGroupOrders2));
 
-        String jsonResponse = objectMapper.writeValueAsString(List.of(orderAssignResponse1,orderAssignResponse2));
 
-        when(mainService.getCouriersAssignments(null, null))
-                .thenReturn(List.of(orderAssignResponse1,orderAssignResponse2));
+        String jsonResponse = objectMapper.writeValueAsString(orderAssignResponse1);
+
+        when(mainService.getCouriersAssignments(null, null)).thenReturn(orderAssignResponse1);
         mockMvc.perform(get("/couriers/assignments"))
                 .andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -972,13 +975,8 @@ public class CourierControllerTest extends CommonTest {
 
         groupOrders1.setOrders(orders1);
 
-        CouriersGroupOrders couriersGroupOrders1 = new CouriersGroupOrders();
-        couriersGroupOrders1.setCourierId(courierId1);
-        couriersGroupOrders1.setGroupOrders(groupOrders1);
+        CouriersGroupOrders couriersGroupOrders1 = new CouriersGroupOrders(courierId1, List.of(groupOrders1));
 
-        OrderAssignResponse orderAssignResponse1 = new OrderAssignResponse();
-        orderAssignResponse1.setDate(date);
-        orderAssignResponse1.setCouriersGroupOrders(List.of(couriersGroupOrders1));
 
         long courierId2 = 7;
 
@@ -1007,19 +1005,15 @@ public class CourierControllerTest extends CommonTest {
 
         groupOrders2.setOrders(orders2);
 
-        CouriersGroupOrders couriersGroupOrders2 = new CouriersGroupOrders();
-        couriersGroupOrders2.setCourierId(courierId2);
-        couriersGroupOrders2.setGroupOrders(groupOrders2);
+        CouriersGroupOrders couriersGroupOrders2 = new CouriersGroupOrders(courierId2, List.of(groupOrders2));
 
-        OrderAssignResponse orderAssignResponse2 = new OrderAssignResponse();
-        orderAssignResponse2.setDate(date);
-        orderAssignResponse2.setCouriersGroupOrders(List.of(couriersGroupOrders2));
+        OrderAssignResponse orderAssignResponse1 = new OrderAssignResponse(date,
+                List.of(couriersGroupOrders1, couriersGroupOrders2));
 
-        String jsonResponse = objectMapper.writeValueAsString(List.of(orderAssignResponse1,orderAssignResponse2));
+        String jsonResponse = objectMapper.writeValueAsString(orderAssignResponse1);
 
-        when(mainService.getCouriersAssignments(null, date))
-                .thenReturn(List.of(orderAssignResponse1,orderAssignResponse2));
-        mockMvc.perform(get(format("/couriers/assignments?date=%s",date)))
+        when(mainService.getCouriersAssignments(null, date)).thenReturn(orderAssignResponse1);
+        mockMvc.perform(get(format("/couriers/assignments?date=%s", date)))
                 .andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -1032,23 +1026,17 @@ public class CourierControllerTest extends CommonTest {
     public void couriersAssignmentsWhenCourierIdIsNullAndDateIsNullAndOrdersNotExistReturnOk() throws Exception {
         LocalDate date = LocalDate.parse("2023-04-20");
 
-        OrderAssignResponse orderAssignResponse2 = new OrderAssignResponse();
-        orderAssignResponse2.setDate(date);
-        orderAssignResponse2.setCouriersGroupOrders(new ArrayList<>());
+        OrderAssignResponse orderAssignResponse1 = new OrderAssignResponse(date, new ArrayList<>());
 
-        OrderAssignResponse orderAssignResponse1 = new OrderAssignResponse();
-        orderAssignResponse1.setDate(date);
-        orderAssignResponse1.setCouriersGroupOrders(new ArrayList<>());
+        String jsonResponse = objectMapper.writeValueAsString(orderAssignResponse1);
 
-        String jsonResponse = objectMapper.writeValueAsString(List.of(orderAssignResponse1,orderAssignResponse2));
-
-        when(mainService.getCouriersAssignments(null, null))
-                .thenReturn(List.of(orderAssignResponse1,orderAssignResponse2));
+        when(mainService.getCouriersAssignments(null, null)).thenReturn(orderAssignResponse1);
         mockMvc.perform(get("/couriers/assignments"))
                 .andDo(print())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(jsonResponse));
+
         verify(mainService).getCouriersAssignments(null, null);
         verifyNoMoreInteractions(mainService);
     }

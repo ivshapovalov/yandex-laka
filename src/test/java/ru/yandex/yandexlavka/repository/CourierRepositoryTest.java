@@ -112,11 +112,11 @@ public class CourierRepositoryTest extends CommonTest {
         courierDto3.setWorkingHours(List.of("08:00-21:00"));
         courierRepository.saveAndFlush(courierDto3);
 
-        List<CourierDto> expected = new ArrayList<>(Arrays.asList(courierDto1, courierDto2));
-
         int offset = 0;
         int limit = 2;
         List<CourierDto> actual = courierRepository.findAll(offset, limit);
+        List<CourierDto> expected = new ArrayList<>(Arrays.asList(courierDto1, courierDto2));
+
         assertEquals(2, actual.size());
         assertIterableEquals(expected, actual);
     }

@@ -12,10 +12,10 @@ public class OrderAssignResponse {
 
     @JsonProperty("date")
     @Valid
-    private LocalDate date;
+    private final LocalDate date;
 
     @JsonProperty("orders")
     @Valid
-    private List<CouriersGroupOrders> couriersGroupOrders;
+    private final List<CouriersGroupOrders> couriersGroupOrdersList;
 
 }

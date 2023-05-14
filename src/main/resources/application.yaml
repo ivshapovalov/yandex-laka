@@ -21,20 +21,6 @@ resilience4j:
         timeoutDuration: 100ms
       instances:
         registerHealthIndicator: true
-#    instances:
-#      myRateLimiter:
-#        baseConfig: default
-#    metrics:
-#      enabled: true
-#    instances:
-#      myRatelimiter:
-#        registerHealthIndicator: true
-#        allowHealthIndicatorToFail: true
-#        subscribeForEvents: true
-#        eventConsumerBufferSize: 100
-#        limitForPeriod: 10
-#        limitRefreshPeriod: 1s
-#        timeoutDuration: 100ms
 spring:
   jackson:
     serialization:
@@ -61,8 +47,8 @@ spring:
   jpa:
     show-sql: true
     generate-ddl: true
-#    hibernate:
-#      ddl-auto: create-drop
+    hibernate:
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
@@ -78,6 +64,56 @@ ratelimiter:
       limitForPeriod: 2
       limitRefreshPeriod: 1s
       timeoutDuration: 1s
+
+salary:
+  factors:
+    earnings:
+      foot: 2
+      bike: 3
+      auto: 4
+    rating:
+      foot: 3
+      bike: 2
+      auto: 1
+jsprit:
+  vehicle:
+    capacity:
+      weightIndex: 0
+      amountIndex: 1
+    types:
+      foot: foot
+      bike: bike
+      auto: auto
+    constraints:
+      region:
+        foot: 1
+        bike: 2
+        auto: 3
+      amount:
+        foot: 2
+        bike: 4
+        auto: 7
+      weight:
+        foot: 10
+        bike: 20
+        auto: 40
+    delivery:
+      cost:
+        first: 100
+        notFirst: 80
+      distance:
+        foot:
+          firstRegion: 1500
+          sameRegion: 600
+          nextRegion: 25000
+        bike:
+          firstRegion: 720
+          sameRegion: 480
+          nextRegion: 720
+        auto:
+          firstRegion: 480
+          sameRegion: 240
+          nextRegion: 480
 ---
 
 spring:
@@ -88,11 +124,15 @@ spring:
     url: jdbc:postgresql://localhost:5432/lavka
     username: postgres
     password: postgres
+
 ---
 spring:
   config:
     activate:
       on-profile: production
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
   datasource:
     url: jdbc:postgresql://${POSTGRES_SERVER}:${POSTGRES_PORT}/${POSTGRES_DB}
     username: ${POSTGRES_USER}

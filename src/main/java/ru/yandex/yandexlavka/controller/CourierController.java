@@ -24,7 +24,7 @@ import java.util.List;
 @RestController
 public class CourierController {
 
-    private MainService mainService;
+    private final MainService mainService;
 
     public CourierController(MainService mainService) {
 
@@ -89,11 +89,11 @@ public class CourierController {
             produces = {"application/json"}
     )
     @RateLimiter(name = "couriersAssignmentsRateLimiter")
-    ResponseEntity<List<OrderAssignResponse>> couriersAssignments(
+    ResponseEntity<OrderAssignResponse> couriersAssignments(
             @Valid @RequestParam(value = "date", required = false) LocalDate date,
             @RequestParam(value = "courier_id", required = false) Long courierId
     ) {
-        return ResponseEntity.ok(mainService.getCouriersAssignments(courierId,date));
+        return ResponseEntity.ok(mainService.getCouriersAssignments(courierId, date));
     }
 
 }

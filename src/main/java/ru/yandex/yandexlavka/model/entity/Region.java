@@ -22,7 +22,6 @@ public class Region {
     private int id;
 
     public Region() {
-
     }
 
     public Region(int id) {

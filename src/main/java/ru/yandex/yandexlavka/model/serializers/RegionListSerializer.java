@@ -1,7 +1,6 @@
 package ru.yandex.yandexlavka.model.serializers;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import ru.yandex.yandexlavka.model.entity.Region;
@@ -16,8 +15,8 @@ public class RegionListSerializer extends StdSerializer<List<Region>> {
         this(null);
     }
 
-    protected RegionListSerializer(Class<List<Region>> t) {
-        super(t);
+    protected RegionListSerializer(Class<List<Region>> clazz) {
+        super(clazz);
     }
 
     @Override
@@ -25,7 +24,7 @@ public class RegionListSerializer extends StdSerializer<List<Region>> {
             List<Region> regions,
             JsonGenerator generator,
             SerializerProvider provider)
-            throws IOException, JsonProcessingException {
+            throws IOException {
 
         List<Integer> ids = new ArrayList<>();
         for (Region region : regions) {

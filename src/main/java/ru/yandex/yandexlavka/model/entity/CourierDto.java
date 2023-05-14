@@ -1,6 +1,5 @@
 package ru.yandex.yandexlavka.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -10,8 +9,6 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,21 +19,31 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
+import jakarta.validation.GroupSequence;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import ru.yandex.yandexlavka.config.SalaryConfig;
+import ru.yandex.yandexlavka.config.validation.FirstOrder;
+import ru.yandex.yandexlavka.config.validation.SecondOrder;
+import ru.yandex.yandexlavka.config.validation.TimeWindowConstraint;
 import ru.yandex.yandexlavka.model.serializers.RegionListSerializer;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Entity
 @Table(name = "couriers")
 @Data
+@EqualsAndHashCode(of = "id")
+@ToString(exclude = "groupOrders")
+@GroupSequence({CourierDto.class, FirstOrder.class, SecondOrder.class})
 public class CourierDto {
 
     @Id
@@ -47,11 +54,11 @@ public class CourierDto {
 
     @Valid
     @JsonProperty("courier_type")
-    @Column(name = "courier_type")
+    @Column(name = "courier_type", nullable = false)
     private CourierTypeEnum courierType;
 
     @Valid
-    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "courier_regions",
             joinColumns = {@JoinColumn(name = "courier_id")},
@@ -60,7 +67,7 @@ public class CourierDto {
     @JsonProperty("regions")
     @JsonSerialize(using = RegionListSerializer.class)
     @OrderBy(value = "id")
-    @Column(name = "region_id")
+    @Column(name = "region_id", nullable = false)
     private List<Region> regions = new ArrayList<>();
 
     @Valid
@@ -68,12 +75,15 @@ public class CourierDto {
     @CollectionTable(name = "courier_working_hours",
             joinColumns = @JoinColumn(name = "courier_id"))
     @JsonProperty("working_hours")
-    @OrderBy(value = "working_hours")
-    @Column(name = "working_hours")
+    @Column(name = "working_hours", nullable = false)
     private
-    List<@Valid @Pattern(regexp = "(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]-(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]") String>
+    List<
+            @Valid
+            @Pattern(regexp = "(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]-(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]",
+                    groups = FirstOrder.class)
+            @TimeWindowConstraint(groups = SecondOrder.class)
+                    String>
             workingHours = new ArrayList<>();
-
     @Valid
     @JsonProperty("rating")
     @Column(name = "rating")
@@ -85,47 +95,34 @@ public class CourierDto {
     private int earnings;
 
     @Valid
-    @OneToMany(mappedBy = "courierDto",cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "courier_id", referencedColumnName = "id")
-//    @JoinTable(
-//            name = "courier_group_orders",
-//            joinColumns = {@JoinColumn(name = "courier_id", referencedColumnName = "id")},
-//            inverseJoinColumns = {@JoinColumn(name = "group_order_id", referencedColumnName = "id")}
-//    )
+    @OneToMany(mappedBy = "courierDto", cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JsonIgnore
-    @JsonBackReference
-    private List<GroupOrders> groupOrders=new ArrayList<>();
+    @JsonManagedReference
+    private List<GroupOrders> groupOrders = new ArrayList<>();
 
     public CourierDto() {
 
     }
 
-    public void calculateEarnings(List<OrderDto> orders) {
-        Map<CourierTypeEnum, Integer> rates = new HashMap<>();
-        rates.put(CourierTypeEnum.FOOT, 2);
-        rates.put(CourierTypeEnum.BIKE, 3);
-        rates.put(CourierTypeEnum.AUTO, 4);
-        Integer rate = rates.get(this.getCourierType());
-        this.earnings = orders.stream().mapToInt(order -> order.getCost()).sum()*rate;
+    public void calculateEarnings(SalaryConfig salaryConfig, List<OrderDto> orders) {
+        Map<String, Integer> factors = salaryConfig.getEarningsFactors();
+        Integer factor = factors.get(this.getCourierType().toString().toLowerCase(Locale.ROOT));
+        this.earnings = orders.stream().mapToInt(OrderDto::getCost).sum() * factor;
     }
 
-    public void calculateRating(List<OrderDto> orders, LocalDate startDate, LocalDate endDate) {
-        Map<CourierTypeEnum, Integer> rates = new HashMap<>();
-        rates.put(CourierTypeEnum.FOOT, 3);
-        rates.put(CourierTypeEnum.BIKE, 2);
-        rates.put(CourierTypeEnum.AUTO, 1);
-        Integer rate = rates.get(this.getCourierType());
-
+    public void calculateRating(SalaryConfig salaryConfig, int ordersSize, LocalDate startDate,
+                                LocalDate endDate) {
+        Map<String, Integer> factors = salaryConfig.getRatingFactors();
+        Integer factor = factors.get(this.getCourierType().toString().toLowerCase(Locale.ROOT));
         Duration between = Duration.between(startDate.atStartOfDay(), endDate.atStartOfDay());
         int hours = (int) between.dividedBy(Duration.ofHours(1));
-        int rating = orders.size() / hours * rate;
-        this.rating = rating;
+        this.rating = factor * ordersSize / hours;
     }
 
     public enum CourierTypeEnum {
         FOOT,
         BIKE,
-        AUTO;
+        AUTO
     }
 
 }

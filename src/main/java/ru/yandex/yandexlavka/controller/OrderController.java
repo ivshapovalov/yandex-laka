@@ -18,6 +18,7 @@ import ru.yandex.yandexlavka.model.dto.OrderAssignResponse;
 import ru.yandex.yandexlavka.model.entity.OrderDto;
 import ru.yandex.yandexlavka.service.MainService;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import java.util.List;
 @RestController
 public class OrderController {
 
-    private MainService mainService;
+    private final MainService mainService;
 
     public OrderController(MainService mainService) {
         this.mainService = mainService;
@@ -87,9 +88,8 @@ public class OrderController {
     @RateLimiter(name = "assignOrderRateLimiter")
     ResponseEntity<List<OrderAssignResponse>> ordersAssign(
             @Valid @RequestParam(value = "date", required = false) final LocalDate date) {
-        List<OrderAssignResponse> orderAssignResponses = mainService.orderAssign(date);
-        return ResponseEntity.ok(orderAssignResponses);
-
+        OrderAssignResponse orderAssignResponse = mainService.orderAssign(date);
+        return ResponseEntity.created(URI.create("/couriers/assignments")).body(List.of(orderAssignResponse));
     }
 
 }
