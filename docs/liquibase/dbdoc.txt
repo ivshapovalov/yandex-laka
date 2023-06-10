@@ -1,0 +1,1 @@
+liquibase --driver=org.postgresql.Driver --changeLogFile=db/changelog/db.changelog-master.yaml --url="jdbc:postgresql://localhost:5432/lavka" --username=postgres --password=postgres --logLevel=info dbDoc db/dbdoc

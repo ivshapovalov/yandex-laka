@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: Ivan
+      changes:
+        - sqlFile:
+           dbms:  'postgresql'
+           encoding: "utf8"
+           endDelimiter:  \nGO
+           splitStatements:  true
+           path:  "db/changelog/changeset/v.0/02-create-tables.sql"
+           stripComments:  true
+      rollback:
+        - sqlFile:
+            dbms:  'postgresql'
+            encoding: "utf8"
+            endDelimiter:  \nGO
+            splitStatements:  true
+            path:  "db/changelog/changeset/v.0/02-drop-tables.sql"
+            stripComments:  true
+

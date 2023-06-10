@@ -1,0 +1,761 @@
+{
+	"info": {
+		"_postman_id": "a5655edf-44f8-433a-8720-5af51ec81f97",
+		"name": "orders",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21643452"
+	},
+	"item": [
+		{
+			"name": "createOrders",
+			"item": [
+				{
+					"name": "InvalidRegion",
+					"item": [
+						{
+							"name": "createOrderWhenNegativeRegion",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orders\": [\r\n    {\r\n      \"weight\":5.5,\r\n      \"region\": -1,\r\n      \"delivery_hours\":[\"09:00-12:00\",\"15:00-22:00\"],\r\n      \"cost\": 10\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrdersWhenLongRegion",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orders\": [\r\n    {\r\n      \"weight\": 5.5,\r\n      \"region\": 2147483648,\r\n      \"delivery_hours\":[\"09:00-12:00\",\"15:00-22:00\"],\r\n      \"cost\": 10\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrdersWhenStringRegion",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orders\": [\r\n    {\r\n      \"weight\": 5.5,\r\n      \"region\": \"Region\",\r\n      \"delivery_hours\":[\"09:00-12:00\",\"15:00-22:00\"],\r\n      \"cost\": 10\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrderWhenRegionIsEmpty",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orders\": [\r\n    {\r\n      \"weight\": 5.5,\r\n      \"region\": \"\",\r\n      \"delivery_hours\":[\"09:00-12:00\",\"15:00-22:00\"],\r\n      \"cost\": 10 \r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "InvalidWorkingHours",
+					"item": [
+						{
+							"name": "createOrdersWhenDeliveryHoursAreEmpty",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orders\": [\r\n    {\r\n      \"weight\": 5.5,\r\n      \"region\": 1,\r\n      \"delivery_hours\":[],\r\n      \"cost\": 10\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrdersWhenDeliveryHourIsMore24",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orders\": [\r\n    {\r\n      \"weight\": 5.5,\r\n      \"region\": 1,\r\n      \"delivery_hours\":[\"09:00-24:00\"],\r\n      \"cost\": 10\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrdersWhenDeliveryHourHasNoLeadingZero",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orders\": [\r\n    {\r\n      \"weight\": 5.5,\r\n      \"region\": 1,\r\n      \"delivery_hours\":[\"9:00-23:00\"],\r\n      \"cost\": 10\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrdersWhenDeliveryHourHasInvalidFormat",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orders\": [\r\n    {\r\n      \"weight\": 5.5,\r\n      \"region\": 1,\r\n      \"delivery_hours\":[\"09:00--23:00\"],\r\n      \"cost\": 10\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrdersWhenDeliveryHoursAreInvalid",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "               {\r\n                  \"orders\": [\r\n                       {\r\n                            \"weight\":5.5,\r\n                            \"region\": 1,\r\n                            \"delivery_hours\":[],\r\n                            \"cost\":\"10\"\r\n                       },\r\n                       {\r\n                            \"weight\":5.5,\r\n                            \"region\": 1,\r\n                            \"delivery_hours\":[\"09:00-24:00\"],\r\n                            \"cost\": 10\r\n                       },\r\n                       {\r\n                            \"weight\":5.5,\r\n                            \"region\": 1,\r\n                            \"delivery_hours\":[\"09:00-24:00\"],\r\n                            \"cost\":10\r\n                       },\r\n                       {\r\n                            \"weight\":5.5,\r\n                            \"region\": 1,\r\n                            \"delivery_hours\":[\"9:00-23:00\"],\r\n                            \"cost\":10\r\n                       },\r\n                       {\r\n                            \"weight\":5.5,\r\n                            \"region\": 1,\r\n                            \"delivery_hours\":[\"09:00--23:00\"],\r\n                            \"cost\":10\r\n                       }                               \r\n                  ]\r\n                }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "InvalidAll",
+					"item": [
+						{
+							"name": "createOrdersWhenBodyIsNull",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrdersWhenRegionAndDeliveryHoursAreInvalid",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orders\": [\r\n    {\r\n      \"weight\": 5.5,\r\n      \"region\": -1,\r\n      \"delivery_hours\":[\"09:00-24:00\"],\r\n      \"cost\": 10\r\n    },\r\n        {\r\n      \"weight\": 7,\r\n      \"region\": 1,\r\n      \"delivery_hours\":[\"9:00-24:00\"],\r\n      \"cost\": 10\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Ok",
+					"item": [
+						{
+							"name": "createOrdersWhenOneOrder",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "                    {\r\n                      \"orders\": [\r\n                        {\r\n                          \"weight\": 100.0,\r\n                          \"region\": 1,\r\n                          \"delivery_hours\":[\"19:00-21:00\",\"09:00-18:00\"],\r\n                          \"cost\": 100\r\n                        }\r\n                      ]\r\n                    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createOrdersWhenOneOrderWiithDeliveryHoursRepeated",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "                    {\r\n                      \"orders\": [\r\n                        {\r\n                          \"weight\": 100.0,\r\n                          \"region\": 1,\r\n                          \"delivery_hours\":[\"19:00-21:00\",\"09:00-18:00\", \"19:00-21:00\",\"09:00-18:00\", \"19:00-21:00\",\"09:00-18:00\"],\r\n                          \"cost\": 100\r\n                        }\r\n                      ]\r\n                    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "createOrdersPopulateFile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": "/C:/JavaStudy/my/career/yandex-backend/yandex-lavka/src/test/resources/datasets/createOrdersRequest.json"
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/orders",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createOrders",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"orders\": [\r\n    {\r\n      \"weight\": 5.5,\r\n      \"region\": 10,\r\n      \"delivery_hours\":[\"09:00-12:00\",\"15:00-22:00\"],\r\n      \"cost\": 10\r\n    },\r\n    {\r\n      \"weight\": 9.8,\r\n      \"region\": 20,\r\n      \"delivery_hours\":[\"09:00-12:00\"],\r\n      \"cost\": 11\r\n    },\r\n      {\r\n      \"weight\": 15,\r\n      \"region\": 3,\r\n      \"delivery_hours\":[\"18:00-22:00\"],\r\n      \"cost\": 50\r\n    },\r\n          {\r\n      \"weight\": 10.0,\r\n      \"region\": 4,\r\n      \"delivery_hours\":[\"08:00-22:00\"],\r\n      \"cost\": 15\r\n    }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/orders",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"orders"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "getOrders",
+			"item": [
+				{
+					"name": "InvalidOffsetOrLimit",
+					"item": [
+						{
+							"name": "getOrdersWhenOffsetIsNegative",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/orders?offset=-1&limit=-1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders"
+									],
+									"query": [
+										{
+											"key": "age",
+											"value": "3",
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": "-1"
+										},
+										{
+											"key": "limit",
+											"value": "-1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCouriersWhenOffsetMoreIntMaxValue",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/couriers?offset=9223372036854775807",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									],
+									"query": [
+										{
+											"key": "offset",
+											"value": "9223372036854775807"
+										},
+										{
+											"key": "limit",
+											"value": "9223372036854775807",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCouriersWhenLimitMoreIntMaxValue",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/couriers?limit=9223372036854775807",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "9223372036854775807"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "getOrders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/orders?offset=0&limit=3",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "offset",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getOrdersWhenNoOneOrderExists",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/orders?offset=100500&limit=3",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"orders"
+							],
+							"query": [
+								{
+									"key": "offset",
+									"value": "100500"
+								},
+								{
+									"key": "limit",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "getOrderById",
+			"item": [
+				{
+					"name": "getOrderById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/orders/5",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"orders",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getOrdersByIdWhenIdNotExists",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/orders/111",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"orders",
+								"111"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getOrderByIdWhenIdIsMoreLongMaxValue",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/orders/92233720368547758071",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"orders",
+								"92233720368547758071"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "completeOrders",
+			"item": [
+				{
+					"name": "Ok",
+					"item": [
+						{
+							"name": "completeOrderWhenOneOrder",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "                    {\r\n                      \"complete_info\": [\r\n                        {\r\n                          \"courier_id\": 1,\r\n                          \"order_id\": 1,\r\n                          \"complete_time\":\"2023-11-03 19:25\"\r\n                        }\r\n                      ]\r\n                    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders/complete",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders",
+										"complete"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Invalid",
+					"item": [
+						{
+							"name": "completeOrderWhenCourierNotExists",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "                    {\r\n                      \"complete_info\": [\r\n                        {\r\n                          \"courier_id\": 100,\r\n                          \"order_id\": 1,\r\n                          \"complete_time\":\"2023-04-03 19:25\"\r\n                        }\r\n                      ]\r\n                    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders/complete",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders",
+										"complete"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "completeOrderWhenCourierIdMoreMaxLong",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "                    {\r\n                    }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/orders/complete",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"orders",
+										"complete"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

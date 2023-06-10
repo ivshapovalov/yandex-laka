@@ -1,0 +1,918 @@
+{
+	"info": {
+		"_postman_id": "fa9d5d24-8a82-4214-8ce4-f5c946de91d6",
+		"name": "couriers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21643452"
+	},
+	"item": [
+		{
+			"name": "createCouriers",
+			"item": [
+				{
+					"name": "InvalidRegions",
+					"item": [
+						{
+							"name": "createCouriersWhenNegativeRegion",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"couriers\": [\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [-1],\r\n      \"working_hours\":[\"09:00-12:00\",\"15:00-20:00\"]\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCouriersWhenLongRegion",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"couriers\": [\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [2147483648],\r\n      \"working_hours\":[\"09:00-12:00\",\"15:00-20:00\"]\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCouriersWhenStringRegion",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"couriers\": [\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [\"Moscow\"],\r\n      \"working_hours\":[\"09:00-12:00\",\"15:00-20:00\"]\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCouriersWhenRegionsAreEmpty",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"couriers\": [\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [],\r\n      \"working_hours\":[\"09:00-12:00\",\"15:00-20:00\"]\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "InvalidCourierType",
+					"item": [
+						{
+							"name": "createCouriersWhenCourierTypeIsInvalid",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"couriers\": [\r\n    {\r\n      \"courier_type\":\"BODY\",\r\n      \"regions\": [1],\r\n      \"working_hours\":[\"09:00-12:00\",\"15:00-20:00\"]\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "InvalidWorkingHours",
+					"item": [
+						{
+							"name": "createCouriersWhenWorkingHoursAreEmpty",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"couriers\": [\r\n          {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [],\r\n      \"working_hours\":[\"12:00-13:00\"]\r\n    },\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [1],\r\n      \"working_hours\":[]\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCouriersWhenWorkingHourIsMore24",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"couriers\": [\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [1],\r\n      \"working_hours\":[\"09:00-25:00\",\"15:00-20:00\"]\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCouriersWhenWorkingHourHasNoLeadingZero",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"couriers\": [\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [1],\r\n      \"working_hours\":[\"9:00-12:00\",\"15:00-20:00\"]\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCouriersWhenWorkingHourHasInvalidFormat",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"couriers\": [\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [1],\r\n      \"working_hours\":[\"09:00--12:00\"]\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCouriersWhenWorkingHoursAreInvalid",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "               {\r\n                  \"couriers\": [\r\n                    {\r\n                      \"courier_type\":\"FOOT\",\r\n                      \"regions\": [1,2,3],\r\n                      \"working_hours\":[\"09:00-24:00\"]\r\n                    },\r\n                     {\r\n                      \"courier_type\":\"FOOT\",\r\n                      \"regions\": [1,2,3],\r\n                      \"working_hours\":[]\r\n                    },\r\n                     {\r\n                      \"courier_type\":\"FOOT\",\r\n                      \"regions\": [1,2,3],\r\n                      \"working_hours\":[\"12:00-25:00\"]\r\n                    },\r\n                     {\r\n                      \"courier_type\":\"FOOT\",\r\n                      \"regions\": [1,2,3],\r\n                      \"working_hours\":[\"2:00-20:00\"]\r\n                    },\r\n                     {\r\n                      \"courier_type\":\"FOOT\",\r\n                      \"regions\": [1,2,3],\r\n                      \"working_hours\":[\"12:00--23:00\"]\r\n                    }                                    \r\n                  ]\r\n                }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "InvalidAll",
+					"item": [
+						{
+							"name": "createCouriersBodyIsNull",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCouriersWhenAllValidatedFieldsAreInvalid",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"couriers\": [\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [-1,0],\r\n      \"working_hours\":[\"09:00-25:00\"]\r\n    }\r\n  ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Ok",
+					"item": [
+						{
+							"name": "createCouriersOneCourier",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "                {\r\n                  \"couriers\": [\r\n                    {\r\n                      \"courier_type\":\"FOOT\",\r\n                      \"regions\": [1,2,3],\r\n                      \"working_hours\":[\"15:00-20:00\",\"09:00-12:00\"]\r\n                    }\r\n                  ]\r\n                }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCouriersOneCourierWhenDeliveryHoursRepeated",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "                {\r\n                  \"couriers\": [\r\n                    {\r\n                      \"courier_type\":\"FOOT\",\r\n                      \"regions\": [1,2,3],\r\n                      \"working_hours\":[\"15:00-20:00\",\"09:00-12:00\",\"15:00-20:00\",\"15:00-20:00\",\"09:00-12:00\"]\r\n                    }\r\n                  ]\r\n                }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCouriersOneCourierWhenRegionsRepeated",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "                {\r\n                  \"couriers\": [\r\n                    {\r\n                      \"courier_type\":\"FOOT\",\r\n                      \"regions\": [1,2,3,1,2,3],\r\n                      \"working_hours\":[ \"19:00-21:00\"]\r\n                    }                 \r\n                  ]\r\n                }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "createCouriersTwoCouriers",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "                {\r\n                  \"couriers\": [\r\n                    {\r\n                      \"courier_type\":\"FOOT\",\r\n                      \"regions\": [1,2,3],\r\n                      \"working_hours\":[\"19:00-20:00\", \"09:00-12:00\",\"09:00-11:00\"]\r\n                    },\r\n                    {\r\n                      \"courier_type\":\"BIKE\",\r\n                      \"regions\": [1,2,3],\r\n                      \"working_hours\":[\"09:00-21:00\"]\r\n                    }                    \r\n                  ]\r\n                }",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "createCouriersPopulateFile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": "/C:/JavaStudy/my/career/yandex-backend/yandex-lavka/src/test/resources/datasets/createCourierRequest.json"
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/couriers",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createCouriersPopulate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"couriers\": [\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [3,2,1,5,4],\r\n      \"working_hours\":[\"15:00-20:00\",\"15:00-20:00\",\"09:00-12:00\",\"15:00-20:00\"]\r\n    },\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [4,2,3,4,1],\r\n      \"working_hours\":[\"09:00-23:00\"]\r\n    },\r\n    {\r\n      \"courier_type\":\"FOOT\",\r\n      \"regions\": [4,5,1,3,4],\r\n      \"working_hours\":[\"09:00-14:00\"]\r\n    },\r\n    {\r\n      \"courier_type\":\"BIKE\",\r\n      \"regions\": [2,3,4],\r\n      \"working_hours\":[\"09:00-11:00\",\"12:30-15:45\"]\r\n    },\r\n    {\r\n      \"courier_type\":\"BIKE\",\r\n      \"regions\": [2,3,4],\r\n      \"working_hours\":[\"09:00-15:00\",\"12:30-18:45\"]\r\n    },\r\n    {\r\n      \"courier_type\":\"BIKE\",\r\n      \"regions\": [5,6,1],\r\n      \"working_hours\":[\"08:00-15:00\",\"16:30-18:45\"]\r\n    }  ,\r\n    {\r\n      \"courier_type\":\"AUTO\",\r\n      \"regions\": [2,5,4],\r\n      \"working_hours\":[\"20:00-05:00\"]\r\n    },\r\n    {\r\n      \"courier_type\":\"AUTO\",\r\n      \"regions\": [2,3,4],\r\n      \"working_hours\":[\"09:00-15:00\"]\r\n    },\r\n    {\r\n      \"courier_type\":\"AUTO\",\r\n      \"regions\": [2,6,3],\r\n      \"working_hours\":[\"09:00-12:00\",\"14:00-18:00\"]\r\n    }\r\n  ]\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/couriers",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "getCouriers",
+			"item": [
+				{
+					"name": "InvalidOffsetOrLimit",
+					"item": [
+						{
+							"name": "getCouriersWhenOffsetIsNegative",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/couriers?limit=-1&offset=-1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									],
+									"query": [
+										{
+											"key": "age",
+											"value": "3",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "-1"
+										},
+										{
+											"key": "offset",
+											"value": "-1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCouriersWhenOffsetAndLimitAreNegative",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/couriers?offset=-1&limit=-1",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									],
+									"query": [
+										{
+											"key": "age",
+											"value": "3",
+											"disabled": true
+										},
+										{
+											"key": "offset",
+											"value": "-1"
+										},
+										{
+											"key": "limit",
+											"value": "-1"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCouriersWhenOffsetMoreIntMaxValue",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/couriers?offset=9223372036854775807",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									],
+									"query": [
+										{
+											"key": "offset",
+											"value": "9223372036854775807"
+										},
+										{
+											"key": "limit",
+											"value": "9223372036854775807",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCouriersWhenLimitMoreIntMaxValue",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/couriers?limit=9223372036854775807",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "9223372036854775807"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Ok",
+					"item": [
+						{
+							"name": "getCouriers",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/couriers",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "getCouriersWhenNoOneCourierExists",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "localhost:8080/couriers?offset=100500&limit=3",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"couriers"
+									],
+									"query": [
+										{
+											"key": "offset",
+											"value": "100500"
+										},
+										{
+											"key": "limit",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "getCourierById",
+			"item": [
+				{
+					"name": "getCourierById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/couriers/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCourierByIdWhenIdNotExists",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/couriers/111",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers",
+								"111"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCourierByIdWhenIdIsMoreLongMaxValue",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/couriers/92233720368547758071",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers",
+								"92233720368547758071"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "getMetaInfo",
+			"item": [
+				{
+					"name": "Ok",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/couriers/meta-info/1?start_date=2023-04-14&end_date=2023-04-15",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers",
+								"meta-info",
+								"1"
+							],
+							"query": [
+								{
+									"key": "start_date",
+									"value": "2023-04-14"
+								},
+								{
+									"key": "end_date",
+									"value": "2023-04-15"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "getAssignments",
+			"item": [
+				{
+					"name": "WhenLocalDateSetAndCourierIdIsNull",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/couriers/assignments?date=2023-04-14",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers",
+								"assignments"
+							],
+							"query": [
+								{
+									"key": "date",
+									"value": "2023-04-14"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "WhenLocalDateSetAndCourierIdSet",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/couriers/assignments?courier_id=1&date=2023-04-14",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers",
+								"assignments"
+							],
+							"query": [
+								{
+									"key": "courier_id",
+									"value": "1"
+								},
+								{
+									"key": "date",
+									"value": "2023-04-14"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "WhenCourierIdIsNullAndLocalDateIsNull",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/couriers/assignments",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers",
+								"assignments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "WhenCourierIdSetAndLocalDateIsNull",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/couriers/assignments?courier_id=1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"couriers",
+								"assignments"
+							],
+							"query": [
+								{
+									"key": "courier_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

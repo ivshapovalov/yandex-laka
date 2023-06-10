@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="3" author="Ivan">
+        <sql>
+            create sequence couriers_seq start with 1 increment by 50;
+            create sequence group_orders_seq start with 1 increment by 50;
+            create sequence orders_seq start with 1 increment by 50;
+        </sql>
+<!--        <sqlFile dbms="postgresql"-->
+<!--                 encoding="utf8"-->
+<!--                 endDelimiter="\nGO"-->
+<!--                 splitStatements="true"-->
+<!--                 stripComments="true"-->
+<!--                 path="db/changelog/changeset/v.0/01-create-sequences.sql"/>-->
+        <rollback>
+            <sqlFile dbms="postgresql"
+                     encoding="utf8"
+                     endDelimiter="\nGO"
+                     splitStatements="true"
+                     stripComments="true"
+                     path="db/changelog/changeset/v.0/01-drop-sequences.sql"/>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

@@ -31,8 +31,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation group: 'org.postgresql', name: 'postgresql', version: '42.6.0'
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.14.2'
-
-    implementation group: 'com.google.ortools', name: 'ortools-java', version: '9.6.2534'
+    implementation 'org.liquibase:liquibase-core'
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
